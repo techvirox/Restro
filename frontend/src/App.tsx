@@ -350,17 +350,26 @@ export default function App() {
     let reconnectTimeout: any = null;
     let isMounted = true;
     let reconnectDelay = 3000;
+    let retryCount = 0;
+    const maxRetries = 5;
 
     const connectWs = () => {
       if (!isMounted) return;
+      const baseUrl = getWsUrl();
+      if (!baseUrl) {
+        console.log("ℹ️ Running on static hosting without external VITE_API_URL. Real-time WebSocket sync is idle.");
+        setIsWsConnected(false);
+        return;
+      }
       try {
-        const wsUrl = `${getWsUrl()}?tenantId=${tenantId}`;
+        const wsUrl = `${baseUrl}?tenantId=${tenantId}`;
         console.log(`🔌 Connecting WebSocket: ${wsUrl}`);
         socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
           console.log(`⚡ WebSocket connected successfully for tenant: ${tenantId}`);
-          reconnectDelay = 3000; // Reset reconnect delay on success
+          reconnectDelay = 3000;
+          retryCount = 0;
           setIsWsConnected(true);
         };
 
@@ -481,11 +490,16 @@ export default function App() {
         };
 
         socket.onclose = () => {
-          console.log(`🔌 WebSocket connection closed. Reconnecting in ${reconnectDelay / 1000}s...`);
           setIsWsConnected(false);
           if (isMounted) {
-            reconnectTimeout = setTimeout(connectWs, reconnectDelay);
-            reconnectDelay = Math.min(reconnectDelay * 1.5, 30000); // Exponential backoff up to 30s
+            retryCount++;
+            if (retryCount <= maxRetries) {
+              console.log(`🔌 WebSocket connection closed. Reconnecting (${retryCount}/${maxRetries}) in ${reconnectDelay / 1000}s...`);
+              reconnectTimeout = setTimeout(connectWs, reconnectDelay);
+              reconnectDelay = Math.min(reconnectDelay * 1.5, 30000);
+            } else {
+              console.warn(`⚠️ WebSocket max reconnect attempts (${maxRetries}) reached. Auto-reconnect paused.`);
+            }
           }
         };
 
@@ -499,8 +513,11 @@ export default function App() {
         console.error('Error starting WebSocket connection:', e);
         setIsWsConnected(false);
         if (isMounted) {
-          reconnectTimeout = setTimeout(connectWs, reconnectDelay);
-          reconnectDelay = Math.min(reconnectDelay * 1.5, 30000);
+          retryCount++;
+          if (retryCount <= maxRetries) {
+            reconnectTimeout = setTimeout(connectWs, reconnectDelay);
+            reconnectDelay = Math.min(reconnectDelay * 1.5, 30000);
+          }
         }
       }
     };

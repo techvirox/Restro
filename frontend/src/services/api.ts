@@ -11,12 +11,20 @@ const isDev = typeof window !== 'undefined' &&
 const BACKEND_URL = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) || 
                     (isDev ? 'http://localhost:3101' : '');  // Empty = same-origin in production
 
-export const getWsUrl = (): string => {
+export const getWsUrl = (): string | null => {
   if (BACKEND_URL) {
     const wsProto = BACKEND_URL.startsWith('https') ? 'wss:' : 'ws:';
     return BACKEND_URL.replace(/^https?:\/\//, `${wsProto}//`).replace(/\/$/, '') + '/ws';
   }
   if (typeof window !== 'undefined') {
+    const isStaticHost = window.location.hostname.endsWith('.workers.dev') || 
+                         window.location.hostname.endsWith('.pages.dev') ||
+                         window.location.hostname.endsWith('.netlify.app') ||
+                         window.location.hostname.endsWith('.vercel.app') ||
+                         window.location.hostname.endsWith('.github.io');
+    if (isStaticHost) {
+      return null;
+    }
     const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${wsProto}//${window.location.host}/ws`;
   }

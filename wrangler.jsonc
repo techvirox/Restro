@@ -17,7 +17,7 @@
     {
       "binding": "DB",
       "database_name": "restro-db",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+      "database_id": "5c952dd9-a702-49fe-8bc3-50180a31aa06"
     }
   ]
 }

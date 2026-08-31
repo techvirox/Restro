@@ -1,0 +1,402 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Base Root Theme Variables Defaults (Indigo Ocean) */
+:root {
+  --accent-primary: #6366f1;
+  --accent-secondary: #8b5cf6;
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --accent-bg-soft: rgba(99, 102, 241, 0.08);
+  --accent-border-soft: rgba(99, 102, 241, 0.2);
+  --theme-text-accent: #6366f1;
+}
+
+/* 1. Indigo Ocean Theme */
+[data-theme="indigo"] {
+  --accent-primary: #6366f1;
+  --accent-secondary: #8b5cf6;
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --accent-bg-soft: rgba(99, 102, 241, 0.08);
+  --accent-border-soft: rgba(99, 102, 241, 0.2);
+  --accent-glow: 0 0 20px rgba(99, 102, 241, 0.35);
+  --theme-text-accent: #4f46e5;
+}
+.dark[data-theme="indigo"] {
+  --theme-text-accent: #818cf8;
+}
+
+/* 2. Emerald Mint Theme */
+[data-theme="emerald"] {
+  --accent-primary: #10b981;
+  --accent-secondary: #06b6d4;
+  --accent-gradient: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  --accent-bg-soft: rgba(16, 185, 129, 0.08);
+  --accent-border-soft: rgba(16, 185, 129, 0.2);
+  --accent-glow: 0 0 20px rgba(16, 185, 129, 0.35);
+  --theme-text-accent: #059669;
+}
+.dark[data-theme="emerald"] {
+  --theme-text-accent: #34d399;
+}
+
+/* 3. Sunset Amber Theme */
+[data-theme="amber"] {
+  --accent-primary: #f59e0b;
+  --accent-secondary: #f43f5e;
+  --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #f43f5e 100%);
+  --accent-bg-soft: rgba(245, 158, 11, 0.08);
+  --accent-border-soft: rgba(245, 158, 11, 0.2);
+  --accent-glow: 0 0 20px rgba(245, 158, 11, 0.35);
+  --theme-text-accent: #d97706;
+}
+.dark[data-theme="amber"] {
+  --theme-text-accent: #fbbf24;
+}
+
+/* 4. Royal Violet Theme */
+[data-theme="violet"] {
+  --accent-primary: #a855f7;
+  --accent-secondary: #ec4899;
+  --accent-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  --accent-bg-soft: rgba(168, 85, 247, 0.08);
+  --accent-border-soft: rgba(168, 85, 247, 0.2);
+  --accent-glow: 0 0 20px rgba(168, 85, 247, 0.35);
+  --theme-text-accent: #9333ea;
+}
+.dark[data-theme="violet"] {
+  --theme-text-accent: #c084fc;
+}
+
+/* 5. Obsidian Slate Theme */
+[data-theme="obsidian"] {
+  --accent-primary: #64748b;
+  --accent-secondary: #3b82f6;
+  --accent-gradient: linear-gradient(135deg, #475569 0%, #3b82f6 100%);
+  --accent-bg-soft: rgba(100, 116, 139, 0.08);
+  --accent-border-soft: rgba(100, 116, 139, 0.2);
+  --accent-glow: 0 0 20px rgba(59, 130, 246, 0.35);
+  --theme-text-accent: #334155;
+}
+.dark[data-theme="obsidian"] {
+  --theme-text-accent: #94a3b8;
+}
+
+/* 6. Cyber Neon Theme */
+[data-theme="cyberpunk"] {
+  --accent-primary: #00f0ff;
+  --accent-secondary: #ff007f;
+  --accent-gradient: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%);
+  --accent-bg-soft: rgba(0, 240, 255, 0.12);
+  --accent-border-soft: rgba(0, 240, 255, 0.3);
+  --accent-glow: 0 0 25px rgba(0, 240, 255, 0.45);
+  --theme-text-accent: #00b8d4;
+}
+.dark[data-theme="cyberpunk"] {
+  --theme-text-accent: #00f0ff;
+}
+
+/* 7. Golden Luxury Theme */
+[data-theme="gold"] {
+  --accent-primary: #f59e0b;
+  --accent-secondary: #d97706;
+  --accent-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  --accent-bg-soft: rgba(245, 158, 11, 0.1);
+  --accent-border-soft: rgba(245, 158, 11, 0.25);
+  --accent-glow: 0 0 22px rgba(245, 158, 11, 0.4);
+  --theme-text-accent: #b45309;
+}
+.dark[data-theme="gold"] {
+  --theme-text-accent: #fcd34d;
+}
+
+/* 8. Crimson Ember Theme */
+[data-theme="crimson"] {
+  --accent-primary: #ef4444;
+  --accent-secondary: #f97316;
+  --accent-gradient: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+  --accent-bg-soft: rgba(239, 68, 68, 0.09);
+  --accent-border-soft: rgba(239, 68, 68, 0.22);
+  --accent-glow: 0 0 20px rgba(239, 68, 68, 0.35);
+  --theme-text-accent: #dc2626;
+}
+.dark[data-theme="crimson"] {
+  --theme-text-accent: #f87171;
+}
+
+/* 9. Midnight Rose Theme */
+[data-theme="rose"] {
+  --accent-primary: #f43f5e;
+  --accent-secondary: #9333ea;
+  --accent-gradient: linear-gradient(135deg, #f43f5e 0%, #9333ea 100%);
+  --accent-bg-soft: rgba(244, 63, 94, 0.09);
+  --accent-border-soft: rgba(244, 63, 94, 0.22);
+  --accent-glow: 0 0 20px rgba(244, 63, 94, 0.35);
+  --theme-text-accent: #e11d48;
+}
+.dark[data-theme="rose"] {
+  --theme-text-accent: #fb7185;
+}
+
+/* 10. Nordic Ice Theme */
+[data-theme="nordic"] {
+  --accent-primary: #06b6d4;
+  --accent-secondary: #3b82f6;
+  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  --accent-bg-soft: rgba(6, 182, 212, 0.08);
+  --accent-border-soft: rgba(6, 182, 212, 0.2);
+  --accent-glow: 0 0 20px rgba(6, 182, 212, 0.35);
+  --theme-text-accent: #0891b2;
+}
+.dark[data-theme="nordic"] {
+  --theme-text-accent: #38bdf8;
+}
+
+/* Custom thermal prints */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #hidden-print-section, #hidden-print-section * {
+    visibility: visible;
+  }
+  #hidden-print-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 320px;
+    margin: 0;
+    padding: 10px;
+    border: none;
+    background: white;
+    color: black;
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Scrollbar tuning */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom premium scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-border-soft);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* Dynamic Glass Morphism Cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.dark .glass-card {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Dynamic Theme Mesh Backgrounds */
+.mesh-bg {
+  background-color: #020617;
+  background-image: 
+    radial-gradient(at 0% 0%, var(--accent-bg-soft) 0px, transparent 60%),
+    radial-gradient(at 100% 0%, hsla(263, 65%, 12%, 0.5) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, hsla(220, 75%, 10%, 0.45) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, var(--accent-bg-soft) 0px, transparent 40%),
+    radial-gradient(at 20% 60%, hsla(200, 60%, 8%, 0.3) 0px, transparent 45%);
+}
+
+.mesh-bg-light {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 0% 0%, var(--accent-bg-soft) 0px, transparent 60%),
+    radial-gradient(at 100% 0%, hsla(263, 80%, 94%, 0.6) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, hsla(220, 90%, 95%, 0.6) 0px, transparent 50%),
+    radial-gradient(at 70% 40%, var(--accent-bg-soft) 0px, transparent 40%);
+}
+
+/* Glow button hover effect */
+.glow-btn {
+  position: relative;
+  overflow: hidden;
+}
+.glow-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 60%);
+  transform: scale(0.5);
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  opacity: 0;
+  pointer-events: none;
+}
+.glow-btn:hover::after {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Focus glow input */
+.glow-input:focus {
+  box-shadow: 0 0 15px var(--accent-border-soft);
+  border-color: var(--accent-primary);
+}
+
+/* Premium card lift effect */
+.premium-card {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.premium-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -12px var(--accent-border-soft);
+}
+
+/* Sidebar active pill with animated gradient */
+.sidebar-active-pill {
+  position: relative;
+  overflow: hidden;
+}
+.sidebar-active-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent-gradient);
+  opacity: 0.12;
+  z-index: -1;
+}
+
+/* Animated gradient border */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.gradient-border-animated {
+  --angle: 0deg;
+  border-image: conic-gradient(from var(--angle), var(--accent-primary), var(--accent-secondary), var(--accent-primary)) 1;
+  animation: borderRotate 4s linear infinite;
+}
+
+@keyframes borderRotate {
+  to { --angle: 360deg; }
+}
+
+/* Stat card shine sweep */
+.stat-card-shine {
+  position: relative;
+  overflow: hidden;
+}
+.stat-card-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.stat-card-shine:hover::after {
+  left: 100%;
+}
+
+/* Fade-in & float animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Pulse ring for live indicators */
+@keyframes pulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.pulse-ring {
+  animation: pulseRing 2s ease-out infinite;
+}
+
+/* Sidebar gradient accent line */
+.sidebar-accent-line {
+  position: relative;
+}
+.sidebar-accent-line::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--accent-gradient);
+  opacity: 0.5;
+}
+
+/* Metric card accent strips */
+.metric-accent-indigo { border-left: 3px solid #6366f1; }
+.metric-accent-teal { border-left: 3px solid #14b8a6; }
+.metric-accent-amber { border-left: 3px solid #f59e0b; }
+.metric-accent-emerald { border-left: 3px solid #10b981; }
+.metric-accent-violet { border-left: 3px solid #a855f7; }

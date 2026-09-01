@@ -263,69 +263,69 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
   if (isEditing) {
     return (
       <div className="max-w-4xl mx-auto space-y-6 pb-12 select-text font-sans px-2 sm:px-0">
-        <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-md animate-fadeIn">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-6">
-            <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <Shield className="w-5 h-5 text-indigo-400 shrink-0" />
+        <div className="bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-xl animate-fadeIn">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-200/80 dark:border-slate-800/60 mb-6">
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <Shield className="w-5 h-5 text-indigo-500 dark:text-indigo-400 shrink-0" />
               Edit Restaurant Profile
             </h2>
             <button
               onClick={() => setIsEditing(false)}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition cursor-pointer"
+              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-rose-950/40 border border-rose-800/40 text-rose-300 text-xs rounded-xl font-semibold leading-relaxed break-words">
+            <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/40 text-rose-600 dark:text-rose-300 text-xs rounded-xl font-semibold leading-relaxed break-words">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSave} className="space-y-6">
-            <div className="bg-indigo-950/20 border border-slate-800/55 p-4.5 rounded-2xl space-y-4">
-              <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-widest block">
+            <div className="bg-indigo-50/60 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/40 p-4 sm:p-4.5 rounded-2xl space-y-4">
+              <h3 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest block">
                 Owner Account Details
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">Owner Name *</label>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block pl-1">Owner Name *</label>
                   <div className="relative">
                     <input
                       type="text"
                       required
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="w-full text-sm border border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-slate-950/40 text-slate-100 placeholder-slate-500 focus:bg-slate-950/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
                     />
-                    <User className="absolute left-3.5 top-4 h-4 w-4 text-slate-500" />
+                    <User className="absolute left-3.5 top-4 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">Email Address</label>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block pl-1">Email Address</label>
                   <div className="relative">
                     <input
                       type="email"
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
                       placeholder="owner@restaurant.com"
-                      className="w-full text-sm border border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-slate-950/40 text-slate-100 placeholder-slate-500 focus:bg-slate-950/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
                     />
-                    <Mail className="absolute left-3.5 top-4 h-4 w-4 text-slate-500" />
+                    <Mail className="absolute left-3.5 top-4 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-violet-950/30 border border-slate-800/55 p-4 sm:p-4.5 rounded-2xl space-y-4">
-              <h3 className="text-xs font-bold text-violet-400 uppercase tracking-widest block">
+            <div className="bg-violet-50/60 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/40 p-4 sm:p-4.5 rounded-2xl space-y-4">
+              <h3 className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-widest block">
                 Restaurant Info (Thermal Bill Branding)
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">Restaurant Name *</label>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block pl-1">Restaurant Name *</label>
                   <div className="relative">
                     <input
                       type="text"
@@ -333,56 +333,56 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
                       value={editClinicName}
                       onChange={(e) => setEditClinicName(e.target.value)}
                       placeholder="e.g. Rio Restro Bar"
-                      className="w-full text-sm border border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-slate-950/40 text-slate-100 placeholder-slate-500 focus:bg-slate-950/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
                     />
-                    <Building className="absolute left-3.5 top-4 h-4 w-4 text-slate-500" />
+                    <Building className="absolute left-3.5 top-4 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   </div>
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">Restaurant Address</label>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block pl-1">Restaurant Address</label>
                   <div className="relative">
                     <input
                       type="text"
                       value={editAddress}
                       onChange={(e) => setEditAddress(e.target.value)}
                       placeholder="e.g. Sector V, Salt Lake City"
-                      className="w-full text-sm border border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-slate-950/40 text-slate-100 placeholder-slate-500 focus:bg-slate-950/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-sans"
                     />
-                    <MapPin className="absolute left-3.5 top-4 h-4 w-4 text-slate-500" />
+                    <MapPin className="absolute left-3.5 top-4 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">Contact Phone</label>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block pl-1">Contact Phone</label>
                   <div className="relative">
                     <input
                       type="text"
                       value={editContactNumber}
                       onChange={(e) => setEditContactNumber(e.target.value)}
-                      className="w-full text-sm border border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-slate-950/40 text-slate-100 placeholder-slate-500 focus:bg-slate-950/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-mono"
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-mono"
                     />
-                    <Phone className="absolute left-3.5 top-4 h-4 w-4 text-slate-500" />
+                    <Phone className="absolute left-3.5 top-4 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">GSTIN Number</label>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block pl-1">GSTIN Number</label>
                   <div className="relative">
                     <input
                       type="text"
                       value={editGstin}
                       onChange={(e) => setEditGstin(e.target.value)}
                       placeholder="e.g. 27AAAAA1111A1Z0"
-                      className="w-full text-sm border border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-slate-950/40 text-slate-100 placeholder-slate-500 focus:bg-slate-950/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-mono"
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-10 pr-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 font-mono"
                     />
-                    <Smartphone className="absolute left-3.5 top-4 h-4 w-4 text-slate-500" />
+                    <Smartphone className="absolute left-3.5 top-4 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4 border-t border-slate-800/60">
+            <div className="flex gap-4 pt-4 border-t border-slate-200/80 dark:border-slate-800/60">
               <button
                 type="submit"
                 disabled={loading}
@@ -398,7 +398,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm uppercase py-3.5 rounded-xl cursor-pointer transition flex items-center justify-center gap-2"
+                className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold text-sm uppercase py-3.5 rounded-xl cursor-pointer transition flex items-center justify-center gap-2"
               >
                 Cancel
               </button>
@@ -413,7 +413,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
     <div className="max-w-4xl mx-auto space-y-6 pb-12 select-text font-sans animate-fadeIn px-2 sm:px-0">
       
       {/* 1. Header Information Panel */}
-      <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-md">
+      <div className="bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-xl">
         {currentUser.role === 'owner' && (
           <div className="sm:absolute sm:top-6 sm:right-6 z-20 flex justify-end mb-4 sm:mb-0">
             <button
@@ -428,7 +428,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
         
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
           {tenant?.profilePic ? (
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border border-slate-800 bg-slate-950 p-2 flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
               <img src={tenant.profilePic} alt="Logo" className="w-full h-full object-contain" />
             </div>
           ) : (
@@ -439,26 +439,26 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
           
           <div className="flex-1 text-center sm:text-left space-y-3 min-w-0 w-full">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white break-words">{currentUser.name}</h2>
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white break-words">{currentUser.name}</h2>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider self-center ${getRoleBadgeColor(currentUser.role)}`}>
                 {getRoleLabel(currentUser.role)}
               </span>
             </div>
             
             {success && (
-              <div className="p-3 bg-emerald-950/30 border border-emerald-800/40 text-emerald-300 text-xs rounded-xl font-semibold leading-relaxed max-w-md mx-auto sm:mx-0 break-words">
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-300 text-xs rounded-xl font-semibold leading-relaxed max-w-md mx-auto sm:mx-0 break-words">
                 {success}
               </div>
             )}
  
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-400 font-medium pt-1 max-w-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium pt-1 max-w-2xl">
               <div className="flex items-center justify-center sm:justify-start gap-2.5 break-all">
-                <Phone className="w-4 h-4 text-indigo-400 shrink-0" />
+                <Phone className="w-4 h-4 text-indigo-500 dark:text-indigo-400 shrink-0" />
                 <span>Owner Phone: {currentUser.phone}</span>
               </div>
               {currentUser.email && (
                 <div className="flex items-center justify-center sm:justify-start gap-2.5 break-all">
-                  <Mail className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <Mail className="w-4 h-4 text-indigo-500 dark:text-indigo-400 shrink-0" />
                   <span>Email: {currentUser.email}</span>
                 </div>
               )}
@@ -468,13 +468,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
       </div>
 
       {/* 2. Embedded Printer Configuration Card */}
-      <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl space-y-6 backdrop-blur-md">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800/60">
-          <div className="flex items-center space-x-2 text-indigo-400">
+      <div className="bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl space-y-6 backdrop-blur-xl">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200/80 dark:border-slate-800/60">
+          <div className="flex items-center space-x-2 text-indigo-500 dark:text-indigo-400">
             <Printer className="w-5 h-5" />
-            <h3 className="text-sm font-black uppercase tracking-wider text-white">Thermal Printer Configuration</h3>
+            <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Thermal Printer Configuration</h3>
           </div>
-          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase">
+          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 uppercase">
             1-Click Direct Print Ready
           </span>
         </div>
@@ -482,7 +482,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Driver Mode Selection */}
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Printer Output Stream</label>
+            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block">Printer Output Stream</label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
@@ -490,7 +490,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
                 className={`py-3 rounded-xl border text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                   printerDriver === 'bluetooth'
                     ? 'bg-blue-600 text-white border-blue-500 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                    : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900'
                 }`}
               >
                 <Bluetooth className="w-4 h-4" />
@@ -502,7 +502,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
                 className={`py-3 rounded-xl border text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                   printerDriver === 'usb'
                     ? 'bg-indigo-600 text-white border-indigo-500 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                    : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900'
                 }`}
               >
                 <Usb className="w-4 h-4" />
@@ -514,7 +514,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
                 className={`py-3 rounded-xl border text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                   printerDriver === 'system'
                     ? 'bg-slate-700 text-white border-slate-600 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                    : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900'
                 }`}
               >
                 <Printer className="w-4 h-4" />
@@ -525,7 +525,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
 
           {/* Paper Roll Width */}
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Paper Roll Width</label>
+            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block">Paper Roll Width</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -533,7 +533,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
                 className={`py-3 rounded-xl border text-xs font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
                   paperWidth === '58mm'
                     ? 'bg-indigo-600 text-white border-indigo-500 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                    : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900'
                 }`}
               >
                 <span>58 mm Roll (Compact)</span>
@@ -544,7 +544,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
                 className={`py-3 rounded-xl border text-xs font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
                   paperWidth === '80mm'
                     ? 'bg-indigo-600 text-white border-indigo-500 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                    : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900'
                 }`}
               >
                 <span>80 mm Roll (Standard)</span>
@@ -554,21 +554,21 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
         </div>
 
         {/* Persistent Session Bluetooth Connector */}
-        <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-1 text-center sm:text-left">
             <div className="flex items-center space-x-2 justify-center sm:justify-start">
-              <span className="text-xs font-bold text-white">Daily Session Connection Status:</span>
+              <span className="text-xs font-bold text-slate-900 dark:text-white">Daily Session Connection Status:</span>
               {btConnected ? (
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold flex items-center gap-1">
                   <Check className="w-3 h-3" /> Connected
                 </span>
               ) : (
-                <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-bold">
                   Not Connected
                 </span>
               )}
             </div>
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">
               Connect once per day/session. Pressing Print will send receipt directly without asking again!
             </p>
           </div>
@@ -584,7 +584,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
         </div>
 
         {/* Support & Complaints Desk Card */}
-        <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/60 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-6 shadow-xl">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 space-y-6 shadow-xl backdrop-blur-xl">
           <div className="flex items-center space-x-3 pb-4 border-b border-slate-200 dark:border-slate-800">
             <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-500 dark:text-indigo-400">
               <HelpCircle className="w-6 h-6" />

@@ -183,10 +183,16 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
       {/* Theme Popover Panel */}
       {isOpen && (
-        <div 
-          id="theme-selector-menu"
-          className="fixed sm:absolute top-16 sm:top-auto right-3 sm:right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-72 max-w-xs sm:max-w-sm rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl p-4 z-50 backdrop-blur-2xl animate-fadeInUp space-y-3.5 max-h-[80vh] overflow-y-auto"
-        >
+        <>
+          {/* Mobile backdrop to block UI under-layering & handle outside clicks cleanly */}
+          <div 
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[9998] sm:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+          <div 
+            id="theme-selector-menu"
+            className="fixed sm:absolute top-16 sm:top-auto inset-x-3 sm:inset-auto right-3 sm:right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-80 max-w-xs sm:max-w-sm rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl p-4 z-[9999] backdrop-blur-2xl animate-fadeInUp space-y-3.5 max-h-[80vh] overflow-y-auto"
+          >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 pb-2.5">
             <div className="flex items-center space-x-1.5 text-xs font-black uppercase text-slate-800 dark:text-slate-100 tracking-wider">
@@ -410,6 +416,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
             </div>
           )}
         </div>
+        </>
       )}
     </div>
   );

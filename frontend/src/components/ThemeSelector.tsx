@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Palette, Sun, Moon, Check, Sparkles, Sliders, RotateCcw, Wand2, Paintbrush } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Palette, Sun, Moon, Check, Sparkles, Sliders, RotateCcw, Wand2, Paintbrush, X } from 'lucide-react';
 import { soundEffects } from './SoundUtility';
 
 export type ColorTheme = 
@@ -181,28 +182,38 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
         </div>
       </button>
 
-      {/* Theme Popover Panel */}
-      {isOpen && (
-        <>
-          {/* Mobile backdrop to block UI under-layering & handle outside clicks cleanly */}
+      {/* Theme Popover Panel via React Portal */}
+      {isOpen && createPortal(
+        <div className="fixed inset-0 z-[999999] flex items-start justify-end p-3 sm:p-6 pt-14 sm:pt-16 pointer-events-auto">
+          {/* Backdrop overlay to catch outside clicks & block underlying UI touches */}
           <div 
-            className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[9998] sm:hidden"
+            className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-xs animate-fadeIn"
             onClick={() => setIsOpen(false)}
           />
+
           <div 
             id="theme-selector-menu"
-            className="fixed sm:absolute top-16 sm:top-auto inset-x-3 sm:inset-auto right-3 sm:right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-80 max-w-xs sm:max-w-sm rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl p-4 z-[9999] backdrop-blur-2xl animate-fadeInUp space-y-3.5 max-h-[80vh] overflow-y-auto"
+            className="relative w-[calc(100vw-1.5rem)] sm:w-80 max-w-sm rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] p-4 sm:p-5 backdrop-blur-2xl animate-fadeInUp space-y-3.5 max-h-[80vh] overflow-y-auto select-none"
           >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 pb-2.5">
-            <div className="flex items-center space-x-1.5 text-xs font-black uppercase text-slate-800 dark:text-slate-100 tracking-wider">
-              <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-              <span>Theme Studio Pro</span>
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 pb-2.5">
+              <div className="flex items-center space-x-1.5 text-xs font-black uppercase text-slate-800 dark:text-slate-100 tracking-wider">
+                <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                <span>Theme Studio Pro</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
+                  10 Themes + Custom
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white transition cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
-            <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
-              10 Themes + Custom
-            </span>
-          </div>
 
           {/* Mode Switcher (Light / Dark) */}
           <div className="space-y-1">
@@ -415,8 +426,9 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
               </div>
             </div>
           )}
-        </div>
-        </>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

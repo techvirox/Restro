@@ -262,11 +262,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
 
   if (isEditing) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6 pb-12 select-text font-sans">
-        <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-md animate-fadeIn">
+      <div className="max-w-4xl mx-auto space-y-6 pb-12 select-text font-sans px-2 sm:px-0">
+        <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-md animate-fadeIn">
           <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-6">
-            <h2 className="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <Shield className="w-5 h-5 text-indigo-400" />
+            <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+              <Shield className="w-5 h-5 text-indigo-400 shrink-0" />
               Edit Restaurant Profile
             </h2>
             <button
@@ -278,7 +278,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-rose-955 border border-rose-800/40 text-rose-350 text-xs rounded-xl font-semibold leading-relaxed">
+            <div className="mb-6 p-4 bg-rose-950/40 border border-rose-800/40 text-rose-300 text-xs rounded-xl font-semibold leading-relaxed break-words">
               {error}
             </div>
           )}
@@ -319,7 +319,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
               </div>
             </div>
 
-            <div className="bg-violet-955 border border-slate-800/55 p-4.5 rounded-2xl space-y-4">
+            <div className="bg-violet-950/30 border border-slate-800/55 p-4 sm:p-4.5 rounded-2xl space-y-4">
               <h3 className="text-xs font-bold text-violet-400 uppercase tracking-widest block">
                 Restaurant Info (Thermal Bill Branding)
               </h3>
@@ -410,15 +410,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12 select-text font-sans animate-fadeIn">
+    <div className="max-w-4xl mx-auto space-y-6 pb-12 select-text font-sans animate-fadeIn px-2 sm:px-0">
       
       {/* 1. Header Information Panel */}
-      <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-md">
+      <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl relative overflow-hidden backdrop-blur-md">
         {currentUser.role === 'owner' && (
-          <div className="absolute top-6 right-6 z-20">
+          <div className="sm:absolute sm:top-6 sm:right-6 z-20 flex justify-end mb-4 sm:mb-0">
             <button
               onClick={startEditing}
-              className="bg-indigo-600/90 hover:bg-indigo-500 border border-indigo-500/30 text-white font-bold text-xs uppercase tracking-wider py-2.5 px-4 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-md"
+              className="bg-indigo-600/90 hover:bg-indigo-500 border border-indigo-500/30 text-white font-bold text-xs uppercase tracking-wider py-2 px-3.5 sm:py-2.5 sm:px-4 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-md"
             >
               <Edit3 className="w-3.5 h-3.5" />
               Edit Profile
@@ -426,38 +426,38 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
           </div>
         )}
         
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
           {tenant?.profilePic ? (
-            <div className="w-24 h-24 rounded-2xl border border-slate-800 bg-slate-950 p-2 flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border border-slate-800 bg-slate-950 p-2 flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
               <img src={tenant.profilePic} alt="Logo" className="w-full h-full object-contain" />
             </div>
           ) : (
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/20 shrink-0">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold shadow-lg shadow-indigo-500/20 shrink-0">
               {currentUser.name.charAt(0).toUpperCase()}
             </div>
           )}
           
-          <div className="flex-1 text-center md:text-left space-y-3">
-            <div className="flex flex-col md:flex-row md:items-center justify-center md:justify-start gap-2.5">
-              <h2 className="text-2xl font-black tracking-tight text-white">{currentUser.name}</h2>
+          <div className="flex-1 text-center sm:text-left space-y-3 min-w-0 w-full">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white break-words">{currentUser.name}</h2>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider self-center ${getRoleBadgeColor(currentUser.role)}`}>
                 {getRoleLabel(currentUser.role)}
               </span>
             </div>
             
             {success && (
-              <div className="p-3 bg-emerald-955/30 border border-emerald-800/40 text-emerald-450 text-xs rounded-xl font-semibold leading-relaxed max-w-md mx-auto md:mx-0">
+              <div className="p-3 bg-emerald-950/30 border border-emerald-800/40 text-emerald-300 text-xs rounded-xl font-semibold leading-relaxed max-w-md mx-auto sm:mx-0 break-words">
                 {success}
               </div>
             )}
  
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-400 font-medium pt-1 max-w-2xl">
-              <div className="flex items-center justify-center md:justify-start gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-400 font-medium pt-1 max-w-2xl">
+              <div className="flex items-center justify-center sm:justify-start gap-2.5 break-all">
                 <Phone className="w-4 h-4 text-indigo-400 shrink-0" />
                 <span>Owner Phone: {currentUser.phone}</span>
               </div>
               {currentUser.email && (
-                <div className="flex items-center justify-center md:justify-start gap-2.5">
+                <div className="flex items-center justify-center sm:justify-start gap-2.5 break-all">
                   <Mail className="w-4 h-4 text-indigo-400 shrink-0" />
                   <span>Email: {currentUser.email}</span>
                 </div>
@@ -468,7 +468,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
       </div>
 
       {/* 2. Embedded Printer Configuration Card */}
-      <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-xl space-y-6 backdrop-blur-md">
+      <div className="bg-[#1a1c23]/90 border border-slate-800/80 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl space-y-6 backdrop-blur-md">
         <div className="flex items-center justify-between pb-4 border-b border-slate-800/60">
           <div className="flex items-center space-x-2 text-indigo-400">
             <Printer className="w-5 h-5" />
@@ -584,7 +584,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ currentUser, onProfile
         </div>
 
         {/* Support & Complaints Desk Card */}
-        <div className="p-6 rounded-3xl bg-slate-900/60 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-6 shadow-xl">
+        <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/60 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-6 shadow-xl">
           <div className="flex items-center space-x-3 pb-4 border-b border-slate-200 dark:border-slate-800">
             <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-500 dark:text-indigo-400">
               <HelpCircle className="w-6 h-6" />

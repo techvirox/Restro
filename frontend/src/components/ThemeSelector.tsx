@@ -185,7 +185,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       {isOpen && (
         <div 
           id="theme-selector-menu"
-          className="absolute right-0 mt-2 w-72 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl p-4 z-50 backdrop-blur-2xl animate-fadeInUp space-y-3.5"
+          className="fixed sm:absolute top-16 sm:top-auto right-3 sm:right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-72 max-w-xs sm:max-w-sm rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl p-4 z-50 backdrop-blur-2xl animate-fadeInUp space-y-3.5 max-h-[80vh] overflow-y-auto"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 pb-2.5">

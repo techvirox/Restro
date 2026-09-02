@@ -78,9 +78,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     
     bills.forEach(b => {
       if (b.type === 'invoice') {
-        if (b.paymentMethod === 'cash') cashSales += b.grandTotal;
-        else if (b.paymentMethod === 'upi') upiSales += b.grandTotal;
-        else if (b.paymentMethod === 'card') cardSales += b.grandTotal;
+        const pm = (b.paymentMethod || '').toLowerCase();
+        if (pm.includes('upi')) upiSales += b.grandTotal;
+        else if (pm.includes('card')) cardSales += b.grandTotal;
+        else cashSales += b.grandTotal;
       }
     });
 

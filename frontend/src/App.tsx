@@ -382,9 +382,6 @@ export default function App() {
               case 'ORDER_SAVED': {
                 const updatedOrder = message.data;
                 setOrders(prev => {
-                  if (updatedOrder.status === 'completed' || updatedOrder.status === 'cancelled') {
-                    return prev.filter(o => o.id !== updatedOrder.id);
-                  }
                   const idx = prev.findIndex(o => o.id === updatedOrder.id);
                   if (idx !== -1) {
                     return prev.map(o => o.id === updatedOrder.id ? updatedOrder : o);
@@ -1013,37 +1010,53 @@ export default function App() {
       return;
     }
 
-    // 1. Compile estimate/invoice transaction log list
-    const billAmount = activeOrder.grandTotal;
-    const currentDiscountAmount = activeOrder.discountType === 'percentage' 
-      ? (activeOrder.subtotal * activeOrder.discountValue) / 100 
-      : activeOrder.discountValue;
+    // 1. Compile estimate/invoice transaction log list safely
+    const subtotalVal = Number(activeOrder.subtotal) || 0;
+    const discVal = Number(activeOrder.discountValue) || 0;
+    const discType = activeOrder.discountType || 'fixed';
+    
+    const currentDiscountAmount = discType === 'percentage' 
+      ? (subtotalVal * discVal) / 100 
+      : discVal;
 
-    const discountFraction = activeOrder.subtotal > 0
-      ? Math.max(0, (activeOrder.subtotal - currentDiscountAmount) / activeOrder.subtotal)
+    const discountFraction = subtotalVal > 0
+      ? Math.max(0, (subtotalVal - currentDiscountAmount) / subtotalVal)
       : 0;
-    const currentTaxValue = activeOrder.items.reduce((acc, item) => {
-      const itemGst = item.gstRate !== undefined ? item.gstRate : 5;
-      const itemSubtotal = item.price * item.quantity;
+      
+    const itemsList = Array.isArray(activeOrder.items) ? activeOrder.items : [];
+    
+    const currentTaxValue = itemsList.reduce((acc, item) => {
+      const itemGst = item.gstRate !== undefined ? Number(item.gstRate) : 5;
+      const itemSubtotal = (Number(item.price) || 0) * (Number(item.quantity) || 0);
       const itemTaxableBase = itemSubtotal * discountFraction;
       return acc + (itemTaxableBase * itemGst) / 100;
     }, 0);
-    const currentSvcValue = ((activeOrder.subtotal - currentDiscountAmount) * activeOrder.serviceChargeRate) / 100;
 
-    // Resolve bill number from the active invoice series list
-    const activeInvoiceSeries = billSeries.find(s => s.type === 'invoice' && s.isActive) || billSeries[0];
-    const generatedBillNum = `${activeInvoiceSeries.prefix}${activeInvoiceSeries.nextNumber}`;
+    const svcRate = Number(activeOrder.serviceChargeRate) || 0;
+    const currentSvcValue = ((subtotalVal - currentDiscountAmount) * svcRate) / 100;
+    const deliveryChg = Number(activeOrder.deliveryCharge) || 0;
+    const billAmount = Number(activeOrder.grandTotal) || (subtotalVal - currentDiscountAmount + currentTaxValue + currentSvcValue + deliveryChg);
 
-    // Increment active series counter
-    const updatedBillSeries = billSeries.map(s => {
-      if (s.id === activeInvoiceSeries.id) {
-        return { ...s, nextNumber: s.nextNumber + 1 };
+    // Resolve bill number from the active invoice series list safely
+    const activeInvoiceSeries = (Array.isArray(billSeries) && billSeries.length > 0)
+      ? (billSeries.find(s => s && s.type === 'invoice' && s.isActive) || billSeries[0])
+      : null;
+
+    const prefix = activeInvoiceSeries?.prefix || 'INV-';
+    const nextNum = activeInvoiceSeries?.nextNumber || (1000 + Math.floor(Math.random() * 9000));
+    const generatedBillNum = `${prefix}${nextNum}`;
+
+    if (activeInvoiceSeries && Array.isArray(billSeries)) {
+      const updatedBillSeries = billSeries.map(s => {
+        if (s.id === activeInvoiceSeries.id) {
+          return { ...s, nextNumber: (s.nextNumber || 1000) + 1 };
+        }
+        return s;
+      });
+      setBillSeries(updatedBillSeries);
+      if (currentUser && !currentUser.isDemo) {
+        api.updateBillSeries(updatedBillSeries).catch(err => console.error("Error updating bill series:", err));
       }
-      return s;
-    });
-    setBillSeries(updatedBillSeries);
-    if (currentUser && !currentUser.isDemo) {
-      api.updateBillSeries(updatedBillSeries).catch(err => console.error("Error updating bill series:", err));
     }
 
     const newBill: EstimateBill = {
@@ -1053,23 +1066,23 @@ export default function App() {
       type: 'invoice',
       customerName: activeOrder.customerName || 'Loyal Guest',
       customerPhone: activeOrder.customerPhone || 'Walk-in',
-      tableName: activeOrder.tableName,
-      orderType: activeOrder.orderType,
-      items: activeOrder.items,
-      subtotal: activeOrder.subtotal,
+      tableName: activeOrder.tableName || 'Table',
+      orderType: activeOrder.orderType || 'dine-in',
+      items: itemsList,
+      subtotal: subtotalVal,
       discountAmount: currentDiscountAmount,
       taxAmount: currentTaxValue,
       serviceChargeAmount: currentSvcValue,
-      deliveryCharge: activeOrder.deliveryCharge || 0,
+      deliveryCharge: deliveryChg,
       grandTotal: billAmount,
       createdAt: new Date().toISOString(),
-      paymentMethod,
-      currentWaiter: activeOrder.currentWaiter
+      paymentMethod: paymentMethod || 'cash',
+      currentWaiter: activeOrder.currentWaiter || 'Counter Staff'
     };
 
     setBills(prev => [newBill, ...prev]);
     setSettledReceipt(newBill);
-    if (currentUser && !currentUser.isDemo) {
+    if ((currentUser && !currentUser.isDemo) || (guestTableId && guestTenantId && guestTenantId !== 'demo')) {
       api.saveBill(newBill).catch(err => console.error("Error saving bill:", err));
     }
 

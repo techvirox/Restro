@@ -55,11 +55,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <header id="mobile-top-header" className="flex lg:hidden bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-100 items-center justify-between px-4 py-3 border-b border-slate-200/80 dark:border-slate-800/60 sticky top-0 z-45 h-14 w-full shrink-0 backdrop-blur-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
         <div className="flex items-center space-x-2.5">
           <div className="relative">
-            <img src="/rio_restro_logo.jpg" alt="Logo" className="w-8 h-8 rounded-xl object-cover shadow-sm border border-slate-200/60 dark:border-slate-700/60" />
+            <img src="/techvirox_logo.jpg" alt="Logo" className="w-8 h-8 rounded-xl object-cover shadow-sm border border-slate-200/60 dark:border-slate-700/60" />
             <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-slate-900 pulse-ring"></div>
           </div>
           <div>
-            <h1 className="font-black tracking-tight text-xs text-slate-900 dark:text-white leading-none">RIO RESTRO</h1>
+            <h1 className="font-black tracking-tight text-xs text-slate-900 dark:text-white leading-none">TECHVIROX RESTRO</h1>
             <span className="text-[8px] tracking-widest bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent font-mono uppercase font-bold mt-0.5 inline-block">POS & KOT</span>
           </div>
         </div>
@@ -112,11 +112,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <div className="flex items-center justify-between pb-4 border-b border-slate-200/80 dark:border-slate-800/60">
                     <div className="flex items-center space-x-2.5">
                       <div className="relative">
-                        <img src="/rio_restro_logo.jpg" alt="Logo" className="w-9 h-9 rounded-xl object-cover shadow-sm border border-slate-200/60 dark:border-slate-700/60" />
+                        <img src="/techvirox_logo.jpg" alt="Logo" className="w-9 h-9 rounded-xl object-cover shadow-sm border border-slate-200/60 dark:border-slate-700/60" />
                         <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-slate-900"></div>
                       </div>
                       <div>
-                        <h1 className="font-black tracking-tight text-xs text-slate-900 dark:text-white">RIO RESTRO</h1>
+                        <h1 className="font-black tracking-tight text-xs text-slate-900 dark:text-white">TECHVIROX RESTRO</h1>
                         <span className="text-[9px] tracking-widest bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent font-mono uppercase font-bold mt-0.5 inline-block">STAFF CONTROL</span>
                       </div>
                     </div>
@@ -211,11 +211,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div id="brand-logo-section" className="flex items-center justify-between pb-5 border-b border-slate-200/60 dark:border-slate-800/40 sidebar-accent-line">
           <div className="flex items-center space-x-2.5">
             <div className="relative">
-              <img src="/rio_restro_logo.jpg" alt="Logo" className="w-9 h-9 rounded-xl object-cover shadow-sm border border-slate-200/60 dark:border-slate-700/60" />
+              <img src="/techvirox_logo.jpg" alt="Logo" className="w-9 h-9 rounded-xl object-cover shadow-sm border border-slate-200/60 dark:border-slate-700/60" />
               <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-slate-900 pulse-ring"></div>
             </div>
             <div>
-              <h1 className="font-black tracking-tight text-sm text-slate-900 dark:text-white font-sans leading-none">RIO RESTRO</h1>
+              <h1 className="font-black tracking-tight text-sm text-slate-900 dark:text-white font-sans leading-none">TECHVIROX RESTRO</h1>
               <span className="text-[10px] tracking-widest bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent font-mono uppercase font-bold mt-0.5 inline-block">POS & KOT v1.2</span>
             </div>
           </div>

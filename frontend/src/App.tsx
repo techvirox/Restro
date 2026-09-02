@@ -1334,7 +1334,7 @@ export default function App() {
             </div>
             <div className="space-y-2">
               <h3 className="text-lg font-black tracking-tight text-slate-900 dark:text-white uppercase font-sans">
-                Rio Restro Ordering
+                TechVirox Restro Ordering
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-450 font-medium">
                 Setting up table menu interface...
@@ -1388,7 +1388,7 @@ export default function App() {
             onSaveOrder={handleSaveOrder}
             onFireKOT={handleFireKOT}
             onBack={() => {}}
-            onCompleteBilling={() => {}}
+            onCompleteBilling={handleCompleteBilling}
             waitersList={[]}
             customers={[]}
             isGuest={true}
@@ -1463,7 +1463,7 @@ export default function App() {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                    Rio Restro
+                    TechVirox Restro
                   </h1>
                   <span className="text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-indigo-500 to-violet-500 text-white px-2 py-0.5 rounded-md">POS</span>
                 </div>

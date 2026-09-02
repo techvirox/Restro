@@ -521,18 +521,19 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   }, [cart]);
 
   // Payment Settlements
-  const handleSettleOrder = (method: 'cash' | 'card' | 'upi' | 'due') => {
-    if (cart.length === 0) return;
+  const handleSettleOrder = (method: 'cash' | 'card' | 'upi' | 'due'): boolean => {
+    if (cart.length === 0) return false;
     if (hasUnsentItems) {
       if(!confirm("There are unsent items in the cart that haven't been sent to KOT/Kitchen yet. Close the bill anyway?")) {
-        return;
+        return false;
       }
     }
 
     const orderObj = handleSaveDraft('completed');
-    if (!orderObj) return;
+    if (!orderObj) return false;
 
     onCompleteBilling(orderObj, method);
+    return true;
   };
 
   const printSlip = () => {
@@ -1364,8 +1365,10 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                   if (hasUnsentItems) {
                     handleFireKOTClick();
                   }
-                  handleSettleOrder('due');
-                  onBack();
+                  const isSettled = handleSettleOrder('due');
+                  if (isSettled) {
+                    onBack();
+                  }
                 }}
                 className={`flex items-center justify-center space-x-1 py-2.5 rounded-xl text-xs font-black uppercase transition-all cursor-pointer border ${
                   !isCustomerSelected || cart.length === 0
@@ -1385,8 +1388,10 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                 onClick={() => {
                   soundEffects.playTick();
                   if (cart.length === 0) return;
-                  handleSettleOrder(selectedPaymentMethod);
-                  onBack();
+                  const isSettled = handleSettleOrder(selectedPaymentMethod);
+                  if (isSettled) {
+                    onBack();
+                  }
                 }}
                 disabled={cart.length === 0}
                 className="flex items-center justify-center space-x-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase shadow-md transition-all cursor-pointer border-none"

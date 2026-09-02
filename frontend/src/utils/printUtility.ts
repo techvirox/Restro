@@ -16,14 +16,14 @@ export const getPrinterConfig = () => {
     }
   }
 
-  const defaultTitle = tenant?.clinicName || 'RIO RESTRO POS';
+  const defaultTitle = tenant?.clinicName || 'TECHVIROX RESTRO POS';
   const defaultAddress = tenant?.address || '';
   const defaultContact = tenant?.contactNumber || '';
   const defaultGstin = tenant?.gstin || '';
   const defaultFoodLicenseNo = tenant?.foodLicenseNo || '';
   const defaultProfilePic = tenant?.profilePic || '';
   const defaultFooterBanner = 'THANK YOU FOR PATRONISING US!';
-  const defaultFooterSub = tenant?.clinicName ? `${tenant.clinicName} POS` : 'Rio Restro POS';
+  const defaultFooterSub = tenant?.clinicName ? `${tenant.clinicName} POS` : 'TechVirox Restro POS';
 
   if (typeof window === 'undefined') {
     return {
@@ -474,7 +474,7 @@ export const printThermalBillIframe = (
 
   const is58mm = paperSize === '58mm';
   const sizeSpec = is58mm ? '58mm 210mm' : '80mm 297mm';
-  const printableWidth = is58mm ? '50mm' : '72mm';
+  const printableWidth = is58mm ? '52mm' : '76mm';
 
   const taxableBase = bill.subtotal - bill.discountAmount;
   const effectiveGstRate = taxableBase > 0 ? (bill.taxAmount / taxableBase) * 100 : 0;

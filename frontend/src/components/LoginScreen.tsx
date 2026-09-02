@@ -131,9 +131,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <img src="/rio_restro_logo.jpg" alt="Logo" className="mx-auto h-16 w-16 rounded-2xl object-cover shadow-[0_4px_20px_rgba(99,102,241,0.2)] border border-slate-200 dark:border-slate-800" />
+          <img src="/techvirox_logo.jpg" alt="Logo" className="mx-auto h-16 w-16 rounded-2xl object-cover shadow-[0_4px_20px_rgba(99,102,241,0.2)] border border-slate-200 dark:border-slate-800" />
           <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-slate-900 to-indigo-950 dark:from-indigo-200 dark:via-indigo-100 dark:to-violet-300 bg-clip-text text-transparent">
-            Rio Restro POS
+            TechVirox Restro POS
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide">
             Multi-Tenant Restaurant POS & Kitchen Display System

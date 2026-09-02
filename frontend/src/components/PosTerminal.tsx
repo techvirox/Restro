@@ -268,11 +268,17 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
     return ['All', ...Array.from(new Set(menu.map(item => item.category)))];
   }, [menu]);
 
-  // Load existing order if available
+  // Cart persistence storage key per table
+  const storageKey = `techvirox_cart_${table.id}`;
+
+  // Load existing order if available or fallback to cached draft cart
   useEffect(() => {
     const isDel = table.id.startsWith('delivery') || activeOrder?.orderType === 'delivery';
-    if (activeOrder) {
+    if (activeOrder && activeOrder.items && activeOrder.items.length > 0) {
       setCart(activeOrder.items);
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(activeOrder.items));
+      } catch (e) {}
       setDiscountValue(activeOrder.discountValue);
       setDiscountType(activeOrder.discountType);
       setTaxRate(activeOrder.taxRate);
@@ -282,19 +288,38 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
       setCustomerName(activeOrder.customerName || '');
       setCustomerPhone(activeOrder.customerPhone || '');
     } else {
-      setCart([]);
+      let cachedCart: OrderItem[] = [];
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          cachedCart = JSON.parse(saved);
+        }
+      } catch (e) {}
+
+      setCart(cachedCart);
       setDiscountValue(0);
       setDiscountType('percentage');
       setTaxRate(5);
       setServiceChargeRate(0);
-      setDeliveryCharge(isDel ? 40 : 0); // Default ₹40 delivery charge for quick checkout of delivery orders, but editable
+      setDeliveryCharge(isDel ? 40 : 0);
       setWaiter(table.currentWaiter || 'Self');
       setCustomerName('');
       setCustomerPhone('');
     }
     setCashReceived('');
     setChangeAmount(null);
-  }, [activeOrder, table]);
+  }, [activeOrder, table.id]);
+
+  // Sync cart updates to localStorage automatically
+  useEffect(() => {
+    try {
+      if (cart && cart.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(cart));
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    } catch (e) {}
+  }, [cart, storageKey]);
 
   // Handle Quick Keyboard entry or Shortcode
   const handleShortcodeSearch = (e: React.FormEvent) => {
@@ -533,6 +558,10 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
 
     const orderObj = handleSaveDraft('completed');
     if (!orderObj) return false;
+
+    try {
+      localStorage.removeItem(storageKey);
+    } catch (e) {}
 
     onCompleteBilling(orderObj, method);
     return true;

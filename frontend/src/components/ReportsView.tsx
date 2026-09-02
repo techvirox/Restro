@@ -61,7 +61,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
   const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 
   // Filters & Tabs State
-  const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'week' | 'month' | 'all'>('all');
+  const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'week' | 'month' | 'custom' | 'all'>('all');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
   const [tempStartDate, setTempStartDate] = useState('');
@@ -457,6 +457,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
         case 'month': {
           return billDate.getMonth() === now.getMonth() && billDate.getFullYear() === now.getFullYear();
         }
+        case 'custom':
+          if (customStartDate && customEndDate) {
+            const start = new Date(customStartDate);
+            const end = new Date(customEndDate);
+            end.setHours(23, 59, 59, 999);
+            return billDate >= start && billDate <= end;
+          }
+          return true;
         case 'all':
         default:
           if (customStartDate && customEndDate) {
@@ -478,7 +486,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
     let totalServiceCharge = 0;
     let totalDiscounts = 0;
     let totalDeliveryCharge = 0;
-    const paymentMethods: Record<string, number> = { cash: 0, card: 0, upi: 0, other: 0 };
+    const paymentMethods: Record<string, number> = { cash: 0, card: 0, upi: 0, due: 0, other: 0 };
     
     filteredBills.forEach(bill => {
       totalGrossSales += bill.grandTotal;
@@ -492,6 +500,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
       if (method.includes('cash')) paymentMethods.cash += bill.grandTotal;
       else if (method.includes('card')) paymentMethods.card += bill.grandTotal;
       else if (method.includes('upi')) paymentMethods.upi += bill.grandTotal;
+      else if (method.includes('due')) paymentMethods.due += bill.grandTotal;
       else paymentMethods.other += bill.grandTotal;
     });
 

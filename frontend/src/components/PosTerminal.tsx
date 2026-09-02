@@ -22,6 +22,7 @@ interface PosTerminalProps {
   isGuest?: boolean;
   kots?: KOT[];
   onUpdateKOTItemStatus?: (kotId: string, itemId: string, status: KOTItem['status']) => void;
+  onSaveBill?: (bill: EstimateBill) => void;
 }
 
 export const PosTerminal: React.FC<PosTerminalProps> = ({
@@ -38,6 +39,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   isGuest = false,
   kots = [],
   onUpdateKOTItemStatus,
+  onSaveBill
 }) => {
   const [orderPlacedSuccess, setOrderPlacedSuccess] = useState(false);
   // Mobile Tab switcher (menu vs cart) for small screens
@@ -1342,6 +1344,9 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                       paymentMethod: selectedPaymentMethod.toUpperCase(),
                       currentWaiter: effectiveWaiterName
                     };
+                    if (onSaveBill) {
+                      onSaveBill(billPayload);
+                    }
                     printThermalBill(billPayload, false, paperSizeSetting, () => {
                       setPrinterNotConnectedModal(true);
                     });

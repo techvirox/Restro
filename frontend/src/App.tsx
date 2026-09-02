@@ -1076,14 +1076,20 @@ export default function App() {
     // Dynamic CRM synchronization: automatically store or update customer profile with purchase details
     registerOrUpdateCRMFromSale(newBill.customerName, newBill.customerPhone, newBill.grandTotal);
 
-    // 2. Remove order from active list (or set completed)
+    // 2. Persist completed order in orders list
     const completedOrder = {
       ...activeOrder,
       status: 'completed' as const,
       paymentMethod,
       completedAt: new Date().toISOString()
     };
-    setOrders(prev => prev.filter(o => o.id !== activeOrder.id));
+    setOrders(prev => {
+      const idx = prev.findIndex(o => o.id === activeOrder.id);
+      if (idx !== -1) {
+        return prev.map((o, index) => index === idx ? completedOrder : o);
+      }
+      return [...prev, completedOrder];
+    });
     if (currentUser && !currentUser.isDemo) {
       api.saveOrder(completedOrder).catch(err => console.error("Error saving completed order:", err));
     }
@@ -1107,6 +1113,20 @@ export default function App() {
 
     // 4. Close terminal view
     setSelectedTable(null);
+  };
+
+  const handleSaveBill = (bill: EstimateBill) => {
+    setBills(prev => {
+      const idx = prev.findIndex(b => b.id === bill.id || b.billNumber === bill.billNumber);
+      if (idx !== -1) {
+        return prev.map((b, index) => index === idx ? bill : b);
+      }
+      return [bill, ...prev];
+    });
+    if ((currentUser && !currentUser.isDemo) || (guestTableId && guestTenantId && guestTenantId !== 'demo')) {
+      api.saveBill(bill).catch(err => console.error("Error saving bill:", err));
+    }
+    registerOrUpdateCRMFromSale(bill.customerName, bill.customerPhone, bill.grandTotal);
   };
 
   const handleUpdateBill = (updatedBill: EstimateBill) => {
@@ -1394,6 +1414,7 @@ export default function App() {
             isGuest={true}
             kots={kots}
             onUpdateKOTItemStatus={handleUpdateKOTItemStatus}
+            onSaveBill={handleSaveBill}
           />
         </main>
       </div>
@@ -1507,6 +1528,7 @@ export default function App() {
                   onAddCustomer={handleAddCustomer}
                   kots={kots}
                   onUpdateKOTItemStatus={handleUpdateKOTItemStatus}
+                  onSaveBill={handleSaveBill}
                 />
               ) : (
                 <>

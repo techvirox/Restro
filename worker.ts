@@ -389,6 +389,20 @@ async function handleApiRequest(request: Request, env: Env, url: URL): Promise<R
     return jsonResponse({ success: true, tickets: results || [] });
   }
 
+  if (pathname === '/api/support-tickets' && method === 'POST') {
+    const body: any = await request.json();
+    const { userName, userEmail, userPhone, type, description } = body;
+    const ticketId = `ticket-${Date.now()}`;
+    await env.DB.prepare(
+      `INSERT INTO support_tickets (id, tenant_id, userName, userEmail, userPhone, type, description, createdAt, status, priority, adminReply, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      ticketId, tenantId, userName || 'Staff User', userEmail || '', userPhone || '',
+      type || 'problem', description || '', new Date().toISOString(), 'new', 'medium', '', new Date().toISOString()
+    ).run().catch(err => console.error("Error creating ticket in D1:", err));
+    return jsonResponse({ success: true, message: "Support ticket created successfully.", ticketId });
+  }
+
   if (pathname.startsWith('/api/admin/support-tickets/') && pathname.endsWith('/reply') && method === 'POST') {
     const parts = pathname.split('/');
     const ticketId = parts[parts.length - 2];
@@ -482,6 +496,8 @@ async function handleApiRequest(request: Request, env: Env, url: URL): Promise<R
     const id = pathname.split('/').pop();
     await env.DB.prepare('DELETE FROM tables_list WHERE id = ? AND tenant_id = ?').bind(id, tenantId).run();
     return jsonResponse({ success: true });
+  }
+
   if (pathname === '/api/orders/purge-all' && method === 'DELETE') {
     await env.DB.prepare('DELETE FROM orders WHERE tenant_id = ?').bind(tenantId).run();
     await env.DB.prepare('DELETE FROM kots WHERE tenant_id = ?').bind(tenantId).run();

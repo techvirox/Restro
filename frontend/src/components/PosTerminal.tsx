@@ -1155,23 +1155,6 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
               </div>
             </div>
 
-            {/* Tax Rates adjustments */}
-            <div className="flex items-center justify-between text-xs font-mono gap-1.5">
-              <span className="text-gray-500 font-bold">CGST + SGST Tax Rate</span>
-              <div className="flex items-center space-x-1">
-                <input
-                  id="tax-rate-input"
-                  type="number"
-                  min="0"
-                  max="30"
-                  value={taxRate}
-                  onChange={(e) => setTaxRate(Math.max(0, parseFloat(e.target.value) || 0))}
-                  className="w-10 bg-white border border-gray-200 text-right px-1 py-0.5 rounded text-[11px] font-bold font-mono"
-                />
-                <span>%</span>
-              </div>
-            </div>
-
             {/* Service Charge adjustments */}
             <div className="flex items-center justify-between text-xs font-mono gap-1.5">
               <span className="text-gray-500 font-bold">Service Charge / Packaging</span>
@@ -1226,7 +1209,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
             </div>
           )}
           <div className="flex justify-between text-xs font-mono text-gray-500">
-            <span>GST ({taxRate}%):</span>
+            <span>GST (Tax):</span>
             <span>₹{taxAmount.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-xs font-mono text-gray-500">

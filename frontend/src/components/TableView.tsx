@@ -136,6 +136,10 @@ export const TableView: React.FC<TableViewProps> = ({
   const cookingCount = tables.filter(t => t.status === 'kot_pending').length;
 
   const filteredTables = tables.filter(table => {
+    const isVirtualTakeaway = table.id.startsWith('takeaway-') || table.id.startsWith('delivery-') || table.name.toLowerCase().includes('takeaway') || table.name.toLowerCase().includes('delivery');
+    if (isVirtualTakeaway && table.status === 'vacant') {
+      return false; // Automatically remove vacant takeaway tables from the seating grid
+    }
     if (statusFilter === 'all') return true;
     return table.status === statusFilter;
   });
@@ -220,93 +224,6 @@ export const TableView: React.FC<TableViewProps> = ({
           />
         </div>
       )}
-
-      {/* Active Takeaway & Counter Sales Section */}
-      {(() => {
-        const activeTakeawayTables = tables.filter(t => 
-          t.id.startsWith('takeaway-') || 
-          t.id.startsWith('delivery-') || 
-          t.name.toLowerCase().includes('takeaway') || 
-          t.name.toLowerCase().includes('delivery')
-        );
-
-        if (activeTakeawayTables.length === 0) return null;
-
-        return (
-          <div id="active-takeaways-container" className="bg-gradient-to-r from-emerald-900/10 via-teal-900/10 to-indigo-900/10 border border-emerald-500/20 rounded-2xl p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="p-1.5 bg-emerald-600 rounded-lg text-white">
-                  <Receipt className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold font-mono tracking-wider text-slate-800 dark:text-slate-100 uppercase">ACTIVE TAKEAWAY & COUNTER ORDERS ({activeTakeawayTables.length})</h3>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Click any card below to open POS terminal, modify order, or complete billing</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => { soundEffects.playTick(); onQuickOrder('takeaway'); }}
-                className="text-[11px] font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition-all shadow-xs cursor-pointer flex items-center space-x-1"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>New Takeaway</span>
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {activeTakeawayTables.map(t => {
-                const activeOrder = getTableOrder(t.id);
-                const itemCounts = activeOrder ? activeOrder.items.reduce((acc, it) => acc + it.quantity, 0) : 0;
-                const totalAmt = activeOrder ? activeOrder.grandTotal : 0;
-                const isBilled = t.status === 'billed';
-                const isKot = t.status === 'kot_pending';
-
-                return (
-                  <div
-                    key={t.id}
-                    onClick={() => {
-                      soundEffects.playTick();
-                      onSelectTable(t);
-                    }}
-                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all hover:scale-[1.02] shadow-sm flex flex-col justify-between ${
-                      isBilled
-                        ? 'bg-amber-50/90 dark:bg-amber-950/30 border-amber-400 text-amber-900 dark:text-amber-200'
-                        : isKot
-                        ? 'bg-indigo-50/90 dark:bg-indigo-950/30 border-indigo-400 text-indigo-900 dark:text-indigo-200'
-                        : 'bg-emerald-50/90 dark:bg-emerald-950/30 border-emerald-400 text-emerald-900 dark:text-emerald-200'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{t.id.includes('delivery') ? '🛵 Delivery' : '🛍️ Takeaway'}</span>
-                        <h4 className="text-sm font-black text-slate-900 dark:text-white font-mono mt-0.5">{t.name}</h4>
-                        {activeOrder?.customerName && (
-                          <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300 truncate max-w-[150px]">{activeOrder.customerName}</p>
-                        )}
-                      </div>
-                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-extrabold uppercase ${
-                        isBilled ? 'bg-amber-500 text-white' : isKot ? 'bg-indigo-600 text-white' : 'bg-emerald-600 text-white'
-                      }`}>
-                        {isBilled ? 'Billed' : isKot ? 'Cooking' : 'Ordering'}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-end pt-3 border-t border-slate-200/50 dark:border-slate-800/50 mt-2">
-                      <div className="text-[10px] text-slate-500 font-mono">
-                        <span>{itemCounts} Items</span>
-                      </div>
-                      <div className="text-sm font-black font-mono text-slate-950 dark:text-white">
-                        ₹{totalAmt.toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })()}
 
       {/* Tables Grid Layout */}
       <div>
@@ -576,8 +493,12 @@ export const TableView: React.FC<TableViewProps> = ({
                 <div className="flex justify-between items-start w-full">
                   <div className="min-w-0 flex-1">
                     <h3 className="text-[9px] font-bold text-gray-400 tracking-wider font-mono uppercase truncate">{table.name}</h3>
-                    <div className="text-[12px] font-black text-slate-850 tracking-tight mt-0.5">
-                      {table.capacity} Pax
+                    <div className="text-[12px] font-black text-slate-850 dark:text-white tracking-tight mt-0.5">
+                      {table.id.startsWith('takeaway-') || table.name.toLowerCase().includes('takeaway')
+                        ? '🛍️ Takeaway'
+                        : table.id.startsWith('delivery-') || table.name.toLowerCase().includes('delivery')
+                        ? '🛵 Delivery'
+                        : `${table.capacity} Pax`}
                     </div>
                   </div>
                   {isEditingLayout ? (

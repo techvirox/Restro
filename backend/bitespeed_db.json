@@ -583,13 +583,13 @@
       "taxRate": 5,
       "serviceChargeRate": 0,
       "grandTotal": 105,
-      "status": "active",
+      "status": "completed",
       "createdAt": "2026-08-30T17:23:03.721Z",
       "paymentMethod": "due",
       "customerName": "Shivam Mishra",
       "customerPhone": "07835853106",
       "currentWaiter": "Counter Staff",
-      "completedAt": null
+      "completedAt": "2026-08-30T17:23:03.721Z"
     },
     {
       "id": "ord-takeaway-2744-4842",
@@ -605,7 +605,7 @@
       "taxRate": 5,
       "serviceChargeRate": 0,
       "grandTotal": 105,
-      "status": "active",
+      "status": "completed",
       "createdAt": "2026-08-30T17:23:04.842Z",
       "paymentMethod": "due",
       "customerName": "Shivam Mishra",

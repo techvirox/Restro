@@ -30,175 +30,20 @@ export const INITIAL_MENU: MenuItem[] = [
 
 export const INITIAL_TABLES: Table[] = [
   { id: 't1', name: 'Table 1', capacity: 2, status: 'vacant', activeOrderId: null },
-  { id: 't2', name: 'Table 2', capacity: 4, status: 'ordering', activeOrderId: 'ord-t2', currentWaiter: 'Rajesh' },
-  { id: 't3', name: 'Table 3', capacity: 4, status: 'kot_pending', activeOrderId: 'ord-t3', currentWaiter: 'Sonia' },
+  { id: 't2', name: 'Table 2', capacity: 4, status: 'vacant', activeOrderId: null },
+  { id: 't3', name: 'Table 3', capacity: 4, status: 'vacant', activeOrderId: null },
   { id: 't4', name: 'Table 4', capacity: 6, status: 'vacant', activeOrderId: null },
-  { id: 't5', name: 'Table 5 (VIP)', capacity: 8, status: 'billed', activeOrderId: 'ord-t5', currentWaiter: 'Amit' },
+  { id: 't5', name: 'Table 5 (VIP)', capacity: 8, status: 'vacant', activeOrderId: null },
   { id: 't6', name: 'Table 6 (Window)', capacity: 2, status: 'vacant', activeOrderId: null },
   { id: 't7', name: 'Table 7 (Balcony)', capacity: 4, status: 'vacant', activeOrderId: null },
   { id: 't8', name: 'Table 8', capacity: 4, status: 'vacant', activeOrderId: null }
 ];
 
-export const INITIAL_ORDERS: TableOrder[] = [
-  {
-    id: 'ord-t2',
-    tableId: 't2',
-    tableName: 'Table 2',
-    orderType: 'dine-in',
-    items: [
-      { menuItemId: 'm1', name: 'Veg Crispy Spring Rolls', price: 180, quantity: 2, sentToKitchenQty: 1, notes: 'Make it extra crispy' },
-      { menuItemId: 'm15', name: 'Mint Virgin Mojito', price: 140, quantity: 2, sentToKitchenQty: 2 }
-    ],
-    kotIds: ['kot-101'],
-    subtotal: 500,
-    discountValue: 0,
-    discountType: 'percentage',
-    taxRate: 5,
-    serviceChargeRate: 5,
-    grandTotal: 550,
-    status: 'active',
-    createdAt: new Date(Date.now() - 35 * 60000).toISOString() // 35 min ago
-  },
-  {
-    id: 'ord-t3',
-    tableId: 't3',
-    tableName: 'Table 3',
-    orderType: 'dine-in',
-    items: [
-      { menuItemId: 'm3', name: 'Spicy Chilli Chicken fry', price: 290, quantity: 1, sentToKitchenQty: 1 },
-      { menuItemId: 'm10', name: 'Chicken Dum Biryani (Hyderabadi)', price: 320, quantity: 2, sentToKitchenQty: 2, notes: 'Double masala in one' },
-      { menuItemId: 'm16', name: 'Mango Lassi Premium', price: 110, quantity: 2, sentToKitchenQty: 2 }
-    ],
-    kotIds: ['kot-102'],
-    subtotal: 1150,
-    discountValue: 10,
-    discountType: 'percentage', // 10% off
-    taxRate: 5,
-    serviceChargeRate: 5,
-    grandTotal: 1138.5,
-    status: 'active',
-    createdAt: new Date(Date.now() - 50 * 60000).toISOString() // 50 min ago
-  },
-  {
-    id: 'ord-t5',
-    tableId: 't5',
-    tableName: 'Table 5 (VIP)',
-    orderType: 'dine-in',
-    items: [
-      { menuItemId: 'm2', name: 'Paneer Tikka Multani', price: 260, quantity: 2, sentToKitchenQty: 2 },
-      { menuItemId: 'm6', name: 'Paneer Butter Masala', price: 280, quantity: 2, sentToKitchenQty: 2 },
-      { menuItemId: 'm11', name: 'Assorted Bread Basket', price: 150, quantity: 3, sentToKitchenQty: 3 },
-      { menuItemId: 'm12', name: 'Sizzling Chocolate Brownie', price: 190, quantity: 4, sentToKitchenQty: 4 }
-    ],
-    kotIds: ['kot-103', 'kot-104'],
-    subtotal: 1990,
-    discountValue: 15,
-    discountType: 'percentage', // 15% off VIP
-    taxRate: 5,
-    serviceChargeRate: 5,
-    grandTotal: 1860.65,
-    status: 'billed',
-    createdAt: new Date(Date.now() - 75 * 60000).toISOString() // 1h 15m ago
-  }
-];
+export const INITIAL_ORDERS: TableOrder[] = [];
 
-export const INITIAL_KOTS: KOT[] = [
-  {
-    id: 'kot-101',
-    kotNumber: 'KOT #101',
-    tableId: 't2',
-    tableName: 'Table 2',
-    createdAt: new Date(Date.now() - 32 * 60000).toISOString(),
-    items: [
-      { id: 'ki-1', menuItemId: 'm1', name: 'Veg Crispy Spring Rolls', quantity: 1, notes: 'Make it extra crispy', status: 'ready' },
-      { id: 'ki-2', menuItemId: 'm15', name: 'Mint Virgin Mojito', quantity: 2, status: 'served' }
-    ],
-    status: 'completed'
-  },
-  {
-    id: 'kot-102',
-    kotNumber: 'KOT #102',
-    tableId: 't3',
-    tableName: 'Table 3',
-    createdAt: new Date(Date.now() - 48 * 60000).toISOString(),
-    items: [
-      { id: 'ki-3', menuItemId: 'm3', name: 'Spicy Chilli Chicken fry', quantity: 1, status: 'cooking' },
-      { id: 'ki-4', menuItemId: 'm10', name: 'Chicken Dum Biryani (Hyderabadi)', quantity: 2, notes: 'Double masala in one', status: 'cooking' },
-      { id: 'ki-5', menuItemId: 'm16', name: 'Mango Lassi Premium', quantity: 2, status: 'ready' }
-    ],
-    status: 'pending'
-  },
-  {
-    id: 'kot-103',
-    kotNumber: 'KOT #103',
-    tableId: 't5',
-    tableName: 'Table 5 (VIP)',
-    createdAt: new Date(Date.now() - 72 * 60000).toISOString(),
-    items: [
-      { id: 'ki-6', menuItemId: 'm2', name: 'Paneer Tikka Multani', quantity: 2, status: 'served' },
-      { id: 'ki-7', menuItemId: 'm6', name: 'Paneer Butter Masala', quantity: 2, status: 'served' },
-      { id: 'ki-8', menuItemId: 'm11', name: 'Assorted Bread Basket', quantity: 3, status: 'served' }
-    ],
-    status: 'completed'
-  },
-  {
-    id: 'kot-104',
-    kotNumber: 'KOT #104',
-    tableId: 't5',
-    tableName: 'Table 5 (VIP)',
-    createdAt: new Date(Date.now() - 40 * 60000).toISOString(),
-    items: [
-      { id: 'ki-9', menuItemId: 'm12', name: 'Sizzling Chocolate Brownie', quantity: 4, status: 'served' }
-    ],
-    status: 'completed'
-  }
-];
+export const INITIAL_KOTS: KOT[] = [];
 
-export const INITIAL_BILLS: EstimateBill[] = [
-  {
-    id: 'bill-1001',
-    orderId: 'orig-ord-past-1',
-    billNumber: 'INV-2026-1001',
-    type: 'invoice',
-    customerName: 'Karan Sharma',
-    customerPhone: '+91 98765 43210',
-    tableName: 'Table 4',
-    orderType: 'dine-in',
-    items: [
-      { menuItemId: 'm2', name: 'Paneer Tikka Multani', price: 260, quantity: 1, sentToKitchenQty: 1 },
-      { menuItemId: 'm8', name: 'Yellow Dal Tadka Double', price: 190, quantity: 1, sentToKitchenQty: 1 },
-      { menuItemId: 'm11', name: 'Assorted Bread Basket', price: 150, quantity: 1, sentToKitchenQty: 1 },
-      { menuItemId: 'm17', name: 'Iced Irish Cold Coffee', price: 130, quantity: 1, sentToKitchenQty: 1 }
-    ],
-    subtotal: 730,
-    discountAmount: 0,
-    taxAmount: 36.5,
-    serviceChargeAmount: 36.5,
-    grandTotal: 803,
-    createdAt: new Date(Date.now() - 2 * 3600000).toISOString(), // 2 hours ago
-    paymentMethod: 'upi'
-  },
-  {
-    id: 'bill-1002',
-    orderId: 'orig-ord-past-2',
-    billNumber: 'EST-2026-1002',
-    type: 'estimate',
-    customerName: 'Ananya Roy',
-    customerPhone: '+91 91234 56789',
-    tableName: 'Takeaway #1',
-    orderType: 'takeaway',
-    items: [
-      { menuItemId: 'm10', name: 'Chicken Dum Biryani (Hyderabadi)', price: 320, quantity: 2, sentToKitchenQty: 2 },
-      { menuItemId: 'm15', name: 'Mint Virgin Mojito', price: 140, quantity: 2, sentToKitchenQty: 2 }
-    ],
-    subtotal: 920,
-    discountAmount: 92, // 10% discount
-    taxAmount: 41.4,
-    serviceChargeAmount: 0, // No service charge on takeaway
-    grandTotal: 869.4,
-    createdAt: new Date(Date.now() - 1.5 * 3600000).toISOString() // 1.5 hours ago
-  }
-];
+export const INITIAL_BILLS: EstimateBill[] = [];
 
 export const INITIAL_BILL_SERIES: BillSeries[] = [
   { id: 'ser-1', name: 'General Dine-In / Tax Invoice', prefix: 'INV-2026-', startNumber: 1001, nextNumber: 1003, type: 'invoice', isActive: true },

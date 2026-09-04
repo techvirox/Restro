@@ -275,13 +275,65 @@ async function handleApiRequest(request: Request, env: Env, url: URL): Promise<R
   }
 
   if (pathname === '/api/admin/tenants' && method === 'GET') {
-    const { results } = await env.DB.prepare('SELECT * FROM tenants ORDER BY id DESC').all();
-    return jsonResponse({ success: true, tenants: results || [] });
+    const { results: tenants } = await env.DB.prepare('SELECT * FROM tenants ORDER BY id DESC').all();
+    const { results: users } = await env.DB.prepare('SELECT id, name, phone, email, tenant_id FROM users WHERE role = "owner"').all();
+    const result = (tenants || []).map((t: any) => {
+      const owner = (users || []).find((u: any) => u.tenant_id == t.id);
+      return {
+        ...t,
+        ownerName: owner ? owner.name : (t.clinic_name || 'Restaurant Owner'),
+        ownerEmail: owner ? owner.email : '',
+        ownerPhone: owner ? owner.phone : t.owner_phone
+      };
+    });
+    return jsonResponse({ success: true, tenants: result });
+  }
+
+  if (pathname.startsWith('/api/admin/tenants/') && pathname.endsWith('/toggle-valid') && method === 'POST') {
+    const parts = pathname.split('/');
+    const id = parts[parts.length - 2];
+    const body: any = await request.json();
+    const { isValid } = body;
+    const validVal = isValid ? 1 : 0;
+    const subStatus = isValid ? 'active' : 'expired';
+    await env.DB.prepare('UPDATE tenants SET is_valid = ?, subscription_status = ? WHERE id = ?')
+      .bind(validVal, subStatus, id).run();
+    return jsonResponse({ success: true, message: `Tenant account ${isValid ? 'enabled' : 'disabled'} successfully.`, isValid });
+  }
+
+  if (pathname.startsWith('/api/admin/tenants/') && !pathname.endsWith('/toggle-valid') && method === 'PUT') {
+    const id = pathname.split('/').pop();
+    const body: any = await request.json();
+    const { expiryDate, status, isValid } = body;
+    await env.DB.prepare('UPDATE tenants SET expiry_date = ?, subscription_status = ?, is_valid = ? WHERE id = ?')
+      .bind(expiryDate, status, isValid ? 1 : 0, id).run();
+    return jsonResponse({ success: true, message: "Tenant configuration updated successfully." });
   }
 
   if (pathname === '/api/admin/plans' && method === 'GET') {
     const { results } = await env.DB.prepare('SELECT * FROM subscription_plans').all();
     return jsonResponse({ success: true, plans: results || [] });
+  }
+
+  if (pathname === '/api/admin/plans' && method === 'PUT') {
+    const body: any = await request.json();
+    const { plans } = body;
+    if (plans && Array.isArray(plans)) {
+      for (const plan of plans) {
+        await env.DB.prepare('UPDATE subscription_plans SET price = ? WHERE id = ?')
+          .bind(plan.price, plan.id).run();
+      }
+    }
+    return jsonResponse({ success: true, message: "Subscription plan prices updated successfully." });
+  }
+
+  if (pathname === '/api/admin/plans' && method === 'POST') {
+    const body: any = await request.json();
+    const { name, duration_months, price } = body;
+    const planId = `plan_${duration_months}_month_${Date.now()}`;
+    await env.DB.prepare('INSERT INTO subscription_plans (id, name, duration_months, price) VALUES (?, ?, ?, ?)')
+      .bind(planId, name, Number(duration_months), Number(price)).run();
+    return jsonResponse({ success: true, message: "Plan created successfully." });
   }
 
   if (pathname === '/api/admin/approve' && method === 'POST') {
@@ -312,6 +364,39 @@ async function handleApiRequest(request: Request, env: Env, url: URL): Promise<R
       'UPDATE tenants SET subscription_status = ?, requested_plan_id = NULL WHERE id = ?'
     ).bind('rejected', targetId).run();
     return jsonResponse({ success: true, message: "Subscription rejected." });
+  }
+
+  if (pathname === '/api/lock-message' && method === 'GET') {
+    const row: any = await env.DB.prepare('SELECT message FROM lock_message LIMIT 1').first().catch(() => null);
+    const defaultMsg = "Your free trial or subscription for Rio Restro POS has expired. Please contact support or select a subscription plan to continue using the software.";
+    return jsonResponse({ success: true, message: row?.message || defaultMsg });
+  }
+
+  if (pathname === '/api/admin/lock-message' && method === 'POST') {
+    const body: any = await request.json();
+    const { message } = body;
+    if (message && message.trim()) {
+      await env.DB.prepare('INSERT OR REPLACE INTO lock_message (id, message) VALUES (1, ?)')
+        .bind(message.trim()).run().catch(async () => {
+          await env.DB.prepare('UPDATE lock_message SET message = ?').bind(message.trim()).run();
+        });
+    }
+    return jsonResponse({ success: true, message: "Lock notice updated successfully." });
+  }
+
+  if (pathname === '/api/support-tickets' && method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT * FROM support_tickets ORDER BY createdAt DESC').all().catch(() => ({ results: [] }));
+    return jsonResponse({ success: true, tickets: results || [] });
+  }
+
+  if (pathname.startsWith('/api/admin/support-tickets/') && pathname.endsWith('/reply') && method === 'POST') {
+    const parts = pathname.split('/');
+    const ticketId = parts[parts.length - 2];
+    const body: any = await request.json();
+    const { adminReply, status } = body;
+    await env.DB.prepare('UPDATE support_tickets SET adminReply = ?, status = ?, updatedAt = ? WHERE id = ?')
+      .bind(adminReply || '', status || 'resolved', new Date().toISOString(), ticketId).run();
+    return jsonResponse({ success: true, message: "Ticket reply saved successfully." });
   }
 
   // ─── 6. MENU OPERATIONS ───────────────────────────────────────────────────

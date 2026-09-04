@@ -248,10 +248,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const filteredTenants = tenants.filter(t => {
+    const clinicNameStr = (t.clinic_name || '').toLowerCase();
+    const ownerPhoneStr = (t.owner_phone || t.ownerPhone || '').toLowerCase();
+    const ownerNameStr = (t.ownerName || '').toLowerCase();
+    const searchLower = (searchTerm || '').toLowerCase();
+
     const matchesSearch = 
-      t.clinic_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.owner_phone.includes(searchTerm) ||
-      (t.ownerName && t.ownerName.toLowerCase().includes(searchTerm.toLowerCase()));
+      clinicNameStr.includes(searchLower) ||
+      ownerPhoneStr.includes(searchLower) ||
+      ownerNameStr.includes(searchLower);
     
     if (statusFilter === 'all') return matchesSearch;
     if (statusFilter === 'active') return matchesSearch && (t.is_valid === true || t.is_valid === 1);

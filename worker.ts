@@ -397,6 +397,11 @@ async function handleApiRequest(request: Request, env: Env, url: URL): Promise<R
     const id = pathname.split('/').pop();
     await env.DB.prepare('DELETE FROM tables_list WHERE id = ? AND tenant_id = ?').bind(id, tenantId).run();
     return jsonResponse({ success: true });
+  if (pathname === '/api/orders/purge-all' && method === 'DELETE') {
+    await env.DB.prepare('DELETE FROM orders WHERE tenant_id = ?').bind(tenantId).run();
+    await env.DB.prepare('DELETE FROM kots WHERE tenant_id = ?').bind(tenantId).run();
+    await env.DB.prepare('DELETE FROM bills WHERE tenant_id = ?').bind(tenantId).run();
+    return jsonResponse({ success: true, message: "All orders, KOTs, and bills purged successfully." });
   }
 
   // ─── 8. ORDERS OPERATIONS ──────────────────────────────────────────────────

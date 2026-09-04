@@ -318,9 +318,13 @@ export default function App() {
       }
     });
 
-    // 2. Derive active table statuses and virtual takeaway/delivery cards strictly from active orders ONLY
+    // 2. Derive active table statuses and virtual takeaway/delivery cards strictly from active recent orders ONLY
     currentOrders.forEach(ord => {
-      if (ord.status !== 'completed' && ord.status !== 'cancelled') {
+      // Ignore orders created > 12 hours ago (stale/old test data)
+      const orderAgeMs = ord.createdAt ? (Date.now() - new Date(ord.createdAt).getTime()) : 0;
+      const isStale = orderAgeMs > 12 * 3600 * 1000;
+
+      if (!isStale && ord.status !== 'completed' && ord.status !== 'cancelled') {
         let tableStatus: Table['status'] = 'vacant';
         if (ord.status === 'billed') {
           tableStatus = 'billed';
@@ -332,14 +336,17 @@ export default function App() {
         const isTakeawayOrDelivery = ord.orderType === 'takeaway' || ord.orderType === 'delivery' || ord.tableId.startsWith('takeaway-') || ord.tableId.startsWith('delivery-');
 
         if (isTakeawayOrDelivery) {
-          tableMap.set(ord.tableId, {
-            id: ord.tableId,
-            name: ord.tableName || (ord.orderType === 'delivery' ? 'Delivery Outbound' : `Takeaway #${ord.id.slice(-4)}`),
-            capacity: 1,
-            status: tableStatus,
-            activeOrderId: ord.id,
-            currentWaiter: ord.currentWaiter || 'Takeaway Counter'
-          });
+          // Takeaway & delivery orders vanish from main floor seating grid once billed, completed, or cancelled
+          if (ord.status !== 'billed') {
+            tableMap.set(ord.tableId, {
+              id: ord.tableId,
+              name: ord.tableName || (ord.orderType === 'delivery' ? 'Delivery Outbound' : `Takeaway #${ord.id.slice(-4)}`),
+              capacity: 1,
+              status: tableStatus,
+              activeOrderId: ord.id,
+              currentWaiter: ord.currentWaiter || 'Takeaway Counter'
+            });
+          }
         } else {
           const existing = tableMap.get(ord.tableId);
           if (existing) {
@@ -539,6 +546,13 @@ export default function App() {
               case 'BILL_SERIES_SAVED': {
                 const updatedSeries = message.data;
                 setBillSeries(updatedSeries);
+                break;
+              }
+              case 'ORDERS_PURGED': {
+                setOrders([]);
+                setKots([]);
+                setBills([]);
+                setTables(INITIAL_TABLES);
                 break;
               }
               default:
@@ -1296,6 +1310,21 @@ export default function App() {
     setSelectedTable(null);
   };
 
+  const handlePurgeAllOrders = async () => {
+    try {
+      if (currentUser && !currentUser.isDemo) {
+        await api.purgeAllOrders();
+      }
+    } catch (err) {
+      console.error("Error purging orders via API:", err);
+    }
+    setOrders([]);
+    setKots([]);
+    setBills([]);
+    setTables(INITIAL_TABLES);
+    soundEffects.playSuccessChime();
+  };
+
   // Table Seating Adjustments callbacks
   const handleAddTable = (newTable: Omit<Table, 'status' | 'activeOrderId'>) => {
     const tableObj: Table = {
@@ -1634,6 +1663,7 @@ export default function App() {
                       onAddTable={handleAddTable}
                       onUpdateTable={handleUpdateTable}
                       onDeleteTable={handleDeleteTable}
+                      onPurgeOrders={handlePurgeAllOrders}
                       tenantId={currentUser?.tenantId}
                     />
                   )}

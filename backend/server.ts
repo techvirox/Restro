@@ -950,6 +950,21 @@ app.delete('/api/tables/:id', async (req, res) => {
 });
 
 // ORDERS
+app.delete('/api/orders/purge-all', async (req, res) => {
+  const tenantId = req.headers['x-tenant-id'];
+  if (!tenantId) return res.status(400).json({ error: "Missing tenant ID." });
+  try {
+    const pool = getPool();
+    await pool.query('DELETE FROM orders WHERE tenant_id = ?', [tenantId]);
+    await pool.query('DELETE FROM kots WHERE tenant_id = ?', [tenantId]);
+    await pool.query('DELETE FROM bills WHERE tenant_id = ?', [tenantId]);
+    broadcastToTenant(String(tenantId), { type: 'ORDERS_PURGED' });
+    res.json({ success: true, message: "All orders, KOTs, and bills purged successfully." });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/orders', async (req, res) => {
   const tenantId = req.headers['x-tenant-id'];
   if (!tenantId) return res.status(400).json({ error: "Missing tenant ID." });

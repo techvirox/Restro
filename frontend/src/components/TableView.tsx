@@ -14,6 +14,7 @@ interface TableViewProps {
   onAddTable?: (table: Omit<Table, 'status' | 'activeOrderId'>) => void;
   onUpdateTable?: (table: Table) => void;
   onDeleteTable?: (id: string) => void;
+  onPurgeOrders?: () => void;
   tenantId?: string | number;
 }
 
@@ -26,6 +27,7 @@ export const TableView: React.FC<TableViewProps> = ({
   onAddTable,
   onUpdateTable,
   onDeleteTable,
+  onPurgeOrders,
   tenantId
 }) => {
   // Seating Designer Modes & Forms
@@ -212,6 +214,24 @@ export const TableView: React.FC<TableViewProps> = ({
           <QrCode className="w-4 h-4" />
           <span>{showBarcodeScanner ? 'Hide Barcode Hub (पैनल छुपाएं)' : 'Table Barcode/QR Hub (बारकोड स्कैन)'}</span>
         </button>
+
+        {/* Purge / Clear Test Orders Button */}
+        {onPurgeOrders && (
+          <button
+            id="btn-purge-test-orders"
+            type="button"
+            onClick={() => {
+              if (window.confirm("Are you sure you want to clear all active orders, KOTs, and bills? This will purge all mock test data.")) {
+                soundEffects.playTick();
+                onPurgeOrders();
+              }
+            }}
+            className="flex items-center space-x-2 text-sm px-4 py-2 rounded-lg font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition-all cursor-pointer"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Clear All Test Orders (ऑर्डर साफ़ करें)</span>
+          </button>
+        )}
       </div>
 
       {showBarcodeScanner && (

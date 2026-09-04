@@ -228,6 +228,11 @@ export const api = {
     return res.data;
   },
 
+  async purgeAllOrders() {
+    const res = await apiClient.delete('/api/orders/purge-all');
+    return res.data;
+  },
+
   // KOTs Operations
   async getKots() {
     const res = await apiClient.get('/api/kots');

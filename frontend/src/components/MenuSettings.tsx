@@ -251,7 +251,7 @@ export const MenuSettings: React.FC<MenuSettingsProps> = ({
 
   const downloadSampleTemplate = () => {
     soundEffects.playTick();
-    const headers = "Dish Name,Fast-Code,Price,Category,Dish Type,GST Slab %,Stock Qty,Available\n";
+    const headers = "Dish Name,Fast-Code,Price,Category,Dish Type,Tax Rate %,Stock Qty,Available\n";
     const sampleRows = [
       'Crispy Honey Chilli Potato,CCP,240,Starters,veg,5,25,true',
       'Butter Chicken,BC,380,Mains,non-veg,5,15,true',
@@ -563,7 +563,7 @@ export const MenuSettings: React.FC<MenuSettingsProps> = ({
             </div>
 
             <div>
-              <label className="block font-bold mb-1 uppercase text-[10px] text-slate-400">GST Slab Rate (%)</label>
+              <label className="block font-bold mb-1 uppercase text-[10px] text-slate-400">Tax Rate (%)</label>
               <select
                 id="form-dish-gstrate"
                 value={gstRate}
@@ -820,7 +820,7 @@ export const MenuSettings: React.FC<MenuSettingsProps> = ({
                             <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 py-0.2 rounded">{item.code}</span>
                           </div>
                           <span className="text-[10px] font-mono text-slate-500 font-bold">
-                            ₹{item.price.toFixed(0)} • GST: {item.gstRate !== undefined ? item.gstRate : 5}% • {' '}
+                            ₹{item.price.toFixed(0)} • Tax: {item.gstRate !== undefined ? item.gstRate : 5}% • {' '}
                             {item.available ? <span className="text-emerald-600 font-bold">POS Available</span> : <span className="text-rose-500 font-bold">Suspended</span>} • {' '}
                             <span className={item.stockQuantity !== undefined && item.stockQuantity < 5 ? 'text-rose-500 font-mono font-extrabold' : 'text-indigo-600 font-mono'}>
                               Stock: {item.stockQuantity ?? 15}
@@ -950,7 +950,7 @@ export const MenuSettings: React.FC<MenuSettingsProps> = ({
                       <div><strong className="text-slate-700 dark:text-slate-300 font-mono">Price:</strong> rate / cost amount</div>
                       <div><strong className="text-slate-700 dark:text-slate-300 font-mono">Category:</strong> category / group</div>
                       <div><strong className="text-slate-700 dark:text-slate-300 font-mono">Dish Type:</strong> veg / non-veg / egg</div>
-                      <div><strong className="text-slate-700 dark:text-slate-300 font-mono">GST Slab:</strong> gst / tax % slab</div>
+                      <div><strong className="text-slate-700 dark:text-slate-300 font-mono">Tax Rate:</strong> Tax % slab</div>
                       <div><strong className="text-slate-700 dark:text-slate-350 font-mono">Stock:</strong> stock qty / stock</div>
                       <div><strong className="text-slate-700 dark:text-slate-350 font-mono">Available:</strong> active / yes / no</div>
                     </div>
@@ -1006,7 +1006,7 @@ export const MenuSettings: React.FC<MenuSettingsProps> = ({
                           <th className="p-2.5 text-center">Type</th>
                           <th className="p-2.5 text-right font-bold">Price</th>
                           <th className="p-2.5 text-center font-bold">Stock</th>
-                          <th className="p-2.5 text-center">GST %</th>
+                          <th className="p-2.5 text-center">Tax %</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800/65 animate-fade-in">

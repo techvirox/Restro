@@ -166,32 +166,17 @@ export const KotView: React.FC<KotViewProps> = ({
                   
                   <div className="flex items-center space-x-1.5">
                     <button
-                      id={`kot-print-bt-${kot.id}`}
+                      id={`kot-print-${kot.id}`}
                       onClick={() => {
                         soundEffects.playTick();
                         const paperSize = (localStorage.getItem('bitespeed_print_paper_size') as '80mm' | '58mm') || '58mm';
-                        localStorage.setItem('bitespeed_printer_driver', 'bluetooth');
                         printThermalKot(kot, paperSize);
                       }}
-                      className="text-xs bg-slate-800 hover:bg-slate-700 text-white font-bold font-mono px-2 py-1.5 rounded-lg flex items-center space-x-1 transition-all shadow-xs cursor-pointer"
-                      title="Print KOT Slip to Bluetooth Thermal Printer"
+                      className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold font-mono px-2.5 py-1.5 rounded-lg flex items-center space-x-1 transition-all shadow-xs cursor-pointer"
+                      title="Direct Print KOT Slip"
                     >
-                      <Printer className="w-3 h-3 text-indigo-400" />
-                      <span>BT Print</span>
-                    </button>
-                    <button
-                      id={`kot-print-usb-${kot.id}`}
-                      onClick={() => {
-                        soundEffects.playTick();
-                        const paperSize = (localStorage.getItem('bitespeed_print_paper_size') as '80mm' | '58mm') || '58mm';
-                        localStorage.setItem('bitespeed_printer_driver', 'usb');
-                        printThermalKot(kot, paperSize);
-                      }}
-                      className="text-xs bg-slate-800 hover:bg-slate-700 text-white font-bold font-mono px-2 py-1.5 rounded-lg flex items-center space-x-1 transition-all shadow-xs cursor-pointer"
-                      title="Print KOT Slip to USB Thermal Printer"
-                    >
-                      <Usb className="w-3 h-3 text-emerald-400" />
-                      <span>USB Print</span>
+                      <Printer className="w-3.5 h-3.5 text-white" />
+                      <span>Print KOT</span>
                     </button>
                     {kot.status === 'pending' && (
                       <button

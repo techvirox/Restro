@@ -830,33 +830,36 @@ export default function App() {
   const handleSaveOrder = (updatedOrder: TableOrder) => {
     let updatedTableObj: Table | null = null;
     // 1. Calculate and update parent Table Status dynamically
-    setTables(prevTables => prevTables.map(t => {
-      if (t.id === updatedOrder.tableId) {
-        let tableStatus: Table['status'] = 'vacant';
-        if (updatedOrder.status === 'billed') {
-          tableStatus = 'billed';
-        } else if (updatedOrder.status === 'cancelled' || updatedOrder.status === 'completed') {
-          tableStatus = 'vacant';
-        } else {
-          const hasDraftItems = updatedOrder.items.some(it => it.quantity > it.sentToKitchenQty);
-          tableStatus = hasDraftItems ? 'ordering' : 'kot_pending';
-        }
-        
-        updatedTableObj = {
-          ...t,
-          status: tableStatus,
-          activeOrderId: updatedOrder.status === 'completed' || updatedOrder.status === 'cancelled' ? null : updatedOrder.id,
-          currentWaiter: updatedOrder.currentWaiter || t.currentWaiter
-        };
+    setTables(prevTables => {
+      const updated = prevTables.map(t => {
+        if (t.id === updatedOrder.tableId) {
+          let tableStatus: Table['status'] = 'vacant';
+          if (updatedOrder.status === 'billed') {
+            tableStatus = 'billed';
+          } else if (updatedOrder.status === 'cancelled' || updatedOrder.status === 'completed') {
+            tableStatus = 'vacant';
+          } else {
+            const hasDraftItems = updatedOrder.items.some(it => it.quantity > it.sentToKitchenQty);
+            tableStatus = hasDraftItems ? 'ordering' : 'kot_pending';
+          }
+          
+          updatedTableObj = {
+            ...t,
+            status: tableStatus,
+            activeOrderId: updatedOrder.status === 'completed' || updatedOrder.status === 'cancelled' ? null : updatedOrder.id,
+            currentWaiter: updatedOrder.currentWaiter || t.currentWaiter
+          };
 
-        if (((currentUser && !currentUser.isDemo) || (guestTableId && guestTenantId && guestTenantId !== 'demo')) && updatedTableObj) {
-          api.updateTable(updatedTableObj.id, updatedTableObj).catch(err => console.error("Error updating table:", err));
-        }
+          if (((currentUser && !currentUser.isDemo) || (guestTableId && guestTenantId && guestTenantId !== 'demo')) && updatedTableObj) {
+            api.updateTable(updatedTableObj.id, updatedTableObj).catch(err => console.error("Error updating table:", err));
+          }
 
-        return updatedTableObj;
-      }
-      return t;
-    }));
+          return updatedTableObj;
+        }
+        return t;
+      });
+      return updated.filter(t => !((t.id.startsWith('takeaway') || t.id.startsWith('delivery')) && t.status === 'vacant'));
+    });
 
     // 2. Insert or replace in Orders database
     setOrders(prevOrders => {

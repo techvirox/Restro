@@ -631,9 +631,16 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h2 className="text-base font-bold text-[#1a1c23] uppercase tracking-tight">
-                {table.name} POS Terminal
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-[#1a1c23] uppercase tracking-tight">
+                  {table.name} POS Terminal
+                </h2>
+                {(table.id.startsWith('takeaway') || activeOrder?.orderType === 'takeaway') && (
+                  <span className="px-2 py-0.5 rounded text-[10px] uppercase font-black bg-amber-100 text-amber-800 border border-amber-300 font-mono flex items-center gap-1">
+                    📦 Takeaway Box Order
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-gray-400 font-mono">
                 Order: {activeOrder?.id || 'New Draft Case'} • Status: <span className="font-bold text-indigo-650 uppercase">{activeOrder?.status || 'Active Cart'}</span>
               </p>
@@ -1376,9 +1383,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                     if (onSaveBill) {
                       onSaveBill(billPayload);
                     }
-                    printThermalBill(billPayload, false, paperSizeSetting, () => {
-                      setPrinterNotConnectedModal(true);
-                    });
+                    printThermalBill(billPayload, false, paperSizeSetting);
                   }
                 }}
                 disabled={cart.length === 0}
@@ -1687,64 +1692,41 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
                 </div>
               </div>
 
-              {/* 2. Bluetooth scan connector */}
-              <div className="flex justify-between items-center bg-blue-50 dark:bg-blue-955 p-2 rounded-lg border border-blue-100 dark:border-blue-900 text-[10px] my-1">
-                <div className="flex items-center space-x-1.5 text-blue-600 dark:text-blue-400">
-                  <Bluetooth className="w-3.5 h-3.5 shrink-0" />
-                  <span className="font-bold">BT Printer: {pairedBtName || 'No printer linked'}</span>
-                </div>
+              {/* 3. Direct Print Thermal Bill */}
+              <div className="my-1">
                 <button
-                  type="button"
-                  onClick={handleBluetoothScan}
-                  className="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold cursor-pointer text-[9px] border-none uppercase"
+                  id="btn-direct-thermal-print"
+                  onClick={() => {
+                    soundEffects.playTick();
+                    const effectiveWaiterName = waiter !== 'Self' ? waiter : (activeOrder?.currentWaiter || table.currentWaiter || 'Counter Staff');
+                    const billPayload: EstimateBill = {
+                      id: activeOrder?.id ? `bill-${activeOrder.id}` : `bill-${Date.now()}`,
+                      orderId: activeOrder?.id || `ord-${Date.now()}`,
+                      billNumber: `INV-${Date.now().toString().slice(-6)}`,
+                      type: 'invoice',
+                      customerName: customerName.trim() || 'Walk-in Guest',
+                      customerPhone: customerPhone.trim(),
+                      tableName: table.name,
+                      orderType: table.id.startsWith('takeaway') ? 'takeaway' : table.id.startsWith('delivery') ? 'delivery' : 'dine-in',
+                      items: cart,
+                      subtotal,
+                      discountAmount,
+                      taxAmount,
+                      serviceChargeAmount,
+                      deliveryCharge: isDelivery ? deliveryCharge : 0,
+                      grandTotal,
+                      createdAt: new Date().toISOString(),
+                      paymentMethod: selectedPaymentMethod.toUpperCase(),
+                      currentWaiter: effectiveWaiterName
+                    };
+                    printThermalBill(billPayload, false, paperSizeSetting);
+                  }}
+                  disabled={cart.length === 0}
+                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold font-sans flex items-center justify-center space-x-2 border-none cursor-pointer disabled:opacity-40 transition-all shadow-xs"
+                  title="Direct Thermal Print Bill"
                 >
-                  Connect
-                </button>
-              </div>
-
-              {/* 2.5. USB scan connector */}
-              <div className="flex justify-between items-center bg-indigo-50 dark:bg-indigo-955 p-2 rounded-lg border border-indigo-100 dark:border-indigo-900 text-[10px] my-1">
-                <div className="flex items-center space-x-1.5 text-indigo-600 dark:text-indigo-400">
-                  <Usb className="w-3.5 h-3.5 shrink-0" />
-                  <span className="font-bold">USB Port: {usbPath || 'No USB printer linked'}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleUsbScan}
-                  className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold cursor-pointer text-[9px] border-none uppercase"
-                >
-                  Connect
-                </button>
-              </div>
-
-              {/* 3. Direct Print buttons */}
-              <div className="grid grid-cols-3 gap-1 my-1">
-                <button
-                  id="btn-actual-device-print-bt"
-                  onClick={() => handleThermalPrint('bluetooth')}
-                  className="py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[10.5px] font-bold font-sans flex flex-col items-center justify-center border-none cursor-pointer gap-0.5"
-                  title="Direct Bluetooth Print"
-                >
-                  <Bluetooth className="w-3.5 h-3.5" />
-                  <span>BT Print</span>
-                </button>
-                <button
-                  id="btn-actual-device-print-usb"
-                  onClick={() => handleThermalPrint('usb')}
-                  className="py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10.5px] font-bold font-sans flex flex-col items-center justify-center border-none cursor-pointer gap-0.5"
-                  title="Direct USB Print"
-                >
-                  <Usb className="w-3.5 h-3.5" />
-                  <span>USB Print</span>
-                </button>
-                <button
-                  id="btn-actual-device-print-sys"
-                  onClick={printSlip}
-                  className="py-2.5 rounded-lg bg-slate-100 hover:bg-slate-205 text-slate-700 text-[10.5px] font-bold font-sans flex flex-col items-center justify-center border border-slate-250 cursor-pointer gap-0.5"
-                  title="System browser print dialog"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Sys Print</span>
+                  <Printer className="w-4 h-4" />
+                  <span>Print Thermal Bill</span>
                 </button>
               </div>
 
@@ -1897,44 +1879,7 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
         </div>
       )}
 
-      {printerNotConnectedModal && (
-        <div id="printer-not-connected-overlay" className="fixed inset-0 z-55 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-200">
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto">
-              <Printer className="w-6 h-6" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-base font-black text-slate-800 dark:text-white">Printer Not Connected</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                The thermal receipt printer could not be reached. Please check printer power and connection.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  soundEffects.playTick();
-                  setPrinterNotConnectedModal(false);
-                  connectBluetoothPrinterSession();
-                }}
-                className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer border-none"
-              >
-                Retry
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  soundEffects.playTick();
-                  setPrinterNotConnectedModal(false);
-                }}
-                className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer border-none"
-              >
-                Proceed
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
     </div>
   );

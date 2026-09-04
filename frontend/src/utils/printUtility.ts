@@ -543,7 +543,7 @@ export const printThermalBillIframe = (
       <table>
         <tr><td>Subtotal:</td><td style="text-align: right;">₹${bill.subtotal.toFixed(2)}</td></tr>
         ${bill.discountAmount > 0 ? `<tr><td>Discount:</td><td style="text-align: right;">-₹${bill.discountAmount.toFixed(2)}</td></tr>` : ''}
-        <tr><td>GST:</td><td style="text-align: right;">₹${bill.taxAmount.toFixed(2)}</td></tr>
+        <tr><td>Tax:</td><td style="text-align: right;">₹${bill.taxAmount.toFixed(2)}</td></tr>
         <tr style="font-weight: bold; font-size: 14px; border-top: 1px solid #000;">
           <td>TOTAL:</td><td style="text-align: right;">₹${bill.grandTotal.toFixed(2)}</td>
         </tr>

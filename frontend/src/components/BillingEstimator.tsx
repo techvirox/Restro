@@ -504,62 +504,7 @@ export const BillingEstimator: React.FC<BillingEstimatorProps> = ({
         </div>
       </div>
 
-      {/* Printer Direct Connect Quick Panels (Bluetooth & USB) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Bluetooth Connection Panel */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-3xs">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-blue-50 dark:bg-blue-955/40 rounded-lg text-blue-600 dark:text-blue-400">
-              <Bluetooth className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider font-sans">
-                Direct Bluetooth Printer Link
-              </h4>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                Active paired device: <span className="text-blue-600 dark:text-blue-400 font-bold">{pairedBtName || 'No printer linked'}</span>
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <button
-              type="button"
-              onClick={handleBluetoothScan}
-              className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-105 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900 rounded-lg text-xs font-bold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition cursor-pointer flex items-center gap-1.5"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Connect / Link BT Printer</span>
-            </button>
-          </div>
-        </div>
 
-        {/* USB Connection Panel */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-3xs">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-indigo-50 dark:bg-indigo-955/40 rounded-lg text-indigo-650 dark:text-indigo-400">
-              <Usb className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider font-sans">
-                Direct USB Printer Link
-              </h4>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                Active USB port: <span className="text-indigo-655 dark:text-indigo-400 font-bold">{usbPath || 'No USB printer linked'}</span>
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <button
-              type="button"
-              onClick={handleUsbScan}
-              className="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-105 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-lg text-xs font-bold text-indigo-650 hover:text-indigo-850 dark:text-indigo-400 dark:hover:text-indigo-300 transition cursor-pointer flex items-center gap-1.5"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Connect / Link USB Printer</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Control bar */}
       <div id="estimator-ledger-filters" className="flex flex-col sm:flex-row gap-2.5 justify-between items-start sm:items-center bg-white border border-gray-200 p-3 rounded-xl shadow-xs">

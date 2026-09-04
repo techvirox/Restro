@@ -88,14 +88,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
     } catch (e) {
       console.error(e);
     }
-    // Pre-seeded operational expenses for immediate visibility
-    return [
-      { id: 'exp1', description: 'Monthly Commercial Space Rent', category: 'Rent', amount: 35000, date: new Date().toISOString().split('T')[0] },
-      { id: 'exp2', description: 'Chef & Kitchen Staff Salaries', category: 'Salaries', amount: 65000, date: new Date().toISOString().split('T')[0] },
-      { id: 'exp3', description: 'Commercial Cooking Gas (LPG Cylinders)', category: 'Utilities', amount: 8400, date: new Date().toISOString().split('T')[0] },
-      { id: 'exp4', description: 'Electricity & Water Bill (Restaurant Load)', category: 'Utilities', amount: 12500, date: new Date().toISOString().split('T')[0] },
-      { id: 'exp5', description: 'Social Media & Google Maps Promotion', category: 'Marketing', amount: 4500, date: new Date().toISOString().split('T')[0] },
-    ];
+    return [];
   });
 
   const [unlinkedCogsPercent, setUnlinkedCogsPercent] = useState<number>(33);
@@ -202,7 +195,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
     let totalServiceCharge = 0;
     let totalDiscounts = 0;
     let totalDeliveryCharge = 0;
-    const paymentMethods = { cash: 0, card: 0, upi: 0, other: 0 };
+    const paymentMethods = { cash: 0, card: 0, upi: 0, due: 0, other: 0 };
     const orderTypesCount = { dineIn: 0, takeaway: 0, delivery: 0 };
     let orderCount = todayBills.length;
 
@@ -218,6 +211,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
       if (method.includes('cash')) paymentMethods.cash += bill.grandTotal;
       else if (method.includes('card')) paymentMethods.card += bill.grandTotal;
       else if (method.includes('upi')) paymentMethods.upi += bill.grandTotal;
+      else if (method.includes('due')) paymentMethods.due += bill.grandTotal;
       else paymentMethods.other += bill.grandTotal;
 
       const type = (bill.orderType || 'dine-in').toLowerCase();
@@ -261,6 +255,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
     const upiPercent = getPercentageString(todayShiftStats.paymentMethods.upi, todayShiftStats.totalGrossSales);
     const cashPercent = getPercentageString(todayShiftStats.paymentMethods.cash, todayShiftStats.totalGrossSales);
     const cardPercent = getPercentageString(todayShiftStats.paymentMethods.card, todayShiftStats.totalGrossSales);
+    const duePercent = getPercentageString(todayShiftStats.paymentMethods.due, todayShiftStats.totalGrossSales);
     const otherPercent = getPercentageString(todayShiftStats.paymentMethods.other, todayShiftStats.totalGrossSales);
 
     const printContent = `
@@ -350,7 +345,11 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
             <span>INR ${todayShiftStats.paymentMethods.card.toFixed(2)} (${cardPercent})</span>
           </div>
           <div class="item-row">
-            <span>4. Other Splits:</span>
+            <span>4. Customer Dues / Credit:</span>
+            <span>INR ${todayShiftStats.paymentMethods.due.toFixed(2)} (${duePercent})</span>
+          </div>
+          <div class="item-row">
+            <span>5. Other Splits:</span>
             <span>INR ${todayShiftStats.paymentMethods.other.toFixed(2)} (${otherPercent})</span>
           </div>
           
@@ -460,6 +459,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
         case 'custom':
           if (customStartDate && customEndDate) {
             const start = new Date(customStartDate);
+            start.setHours(0, 0, 0, 0);
             const end = new Date(customEndDate);
             end.setHours(23, 59, 59, 999);
             return billDate >= start && billDate <= end;
@@ -469,6 +469,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
         default:
           if (customStartDate && customEndDate) {
             const start = new Date(customStartDate);
+            start.setHours(0, 0, 0, 0);
             const end = new Date(customEndDate);
             end.setHours(23, 59, 59, 999);
             return billDate >= start && billDate <= end;
@@ -1691,6 +1692,25 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
                     <div 
                       className="bg-blue-500 h-full rounded-full transition-all duration-500"
                       style={{ width: getPercentageString(stats.paymentMethods.card, stats.totalGrossSales) }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Customer Dues / Ledger Credit */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center text-xs font-bold font-sans">
+                    <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>Customer Dues / Ledger Credit</span>
+                    </span>
+                    <span className="font-mono text-[11px]">
+                      ₹{stats.paymentMethods.due.toFixed(1)} ({getPercentageString(stats.paymentMethods.due, stats.totalGrossSales)})
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-amber-500 h-full rounded-full transition-all duration-500"
+                      style={{ width: getPercentageString(stats.paymentMethods.due, stats.totalGrossSales) }}
                     ></div>
                   </div>
                 </div>

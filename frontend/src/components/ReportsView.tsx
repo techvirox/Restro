@@ -88,7 +88,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
     } catch (e) {
       console.error(e);
     }
-    return [];
+    // Pre-seeded operational expenses for immediate visibility
+    return [
+      { id: 'exp1', description: 'Monthly Commercial Space Rent', category: 'Rent', amount: 35000, date: new Date().toISOString().split('T')[0] },
+      { id: 'exp2', description: 'Chef & Kitchen Staff Salaries', category: 'Salaries', amount: 65000, date: new Date().toISOString().split('T')[0] },
+      { id: 'exp3', description: 'Commercial Cooking Gas (LPG Cylinders)', category: 'Utilities', amount: 8400, date: new Date().toISOString().split('T')[0] },
+      { id: 'exp4', description: 'Electricity & Water Bill (Restaurant Load)', category: 'Utilities', amount: 12500, date: new Date().toISOString().split('T')[0] },
+      { id: 'exp5', description: 'Social Media & Google Maps Promotion', category: 'Marketing', amount: 4500, date: new Date().toISOString().split('T')[0] },
+    ];
   });
 
   const [unlinkedCogsPercent, setUnlinkedCogsPercent] = useState<number>(33);
@@ -195,7 +202,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
     let totalServiceCharge = 0;
     let totalDiscounts = 0;
     let totalDeliveryCharge = 0;
-    const paymentMethods = { cash: 0, card: 0, upi: 0, due: 0, other: 0 };
+    const paymentMethods = { cash: 0, card: 0, upi: 0, other: 0 };
     const orderTypesCount = { dineIn: 0, takeaway: 0, delivery: 0 };
     let orderCount = todayBills.length;
 
@@ -211,7 +218,6 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
       if (method.includes('cash')) paymentMethods.cash += bill.grandTotal;
       else if (method.includes('card')) paymentMethods.card += bill.grandTotal;
       else if (method.includes('upi')) paymentMethods.upi += bill.grandTotal;
-      else if (method.includes('due')) paymentMethods.due += bill.grandTotal;
       else paymentMethods.other += bill.grandTotal;
 
       const type = (bill.orderType || 'dine-in').toLowerCase();
@@ -255,7 +261,6 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
     const upiPercent = getPercentageString(todayShiftStats.paymentMethods.upi, todayShiftStats.totalGrossSales);
     const cashPercent = getPercentageString(todayShiftStats.paymentMethods.cash, todayShiftStats.totalGrossSales);
     const cardPercent = getPercentageString(todayShiftStats.paymentMethods.card, todayShiftStats.totalGrossSales);
-    const duePercent = getPercentageString(todayShiftStats.paymentMethods.due, todayShiftStats.totalGrossSales);
     const otherPercent = getPercentageString(todayShiftStats.paymentMethods.other, todayShiftStats.totalGrossSales);
 
     const printContent = `
@@ -345,11 +350,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
             <span>INR ${todayShiftStats.paymentMethods.card.toFixed(2)} (${cardPercent})</span>
           </div>
           <div class="item-row">
-            <span>4. Customer Dues / Credit:</span>
-            <span>INR ${todayShiftStats.paymentMethods.due.toFixed(2)} (${duePercent})</span>
-          </div>
-          <div class="item-row">
-            <span>5. Other Splits:</span>
+            <span>4. Other Splits:</span>
             <span>INR ${todayShiftStats.paymentMethods.other.toFixed(2)} (${otherPercent})</span>
           </div>
           
@@ -459,7 +460,6 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
         case 'custom':
           if (customStartDate && customEndDate) {
             const start = new Date(customStartDate);
-            start.setHours(0, 0, 0, 0);
             const end = new Date(customEndDate);
             end.setHours(23, 59, 59, 999);
             return billDate >= start && billDate <= end;
@@ -469,7 +469,6 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
         default:
           if (customStartDate && customEndDate) {
             const start = new Date(customStartDate);
-            start.setHours(0, 0, 0, 0);
             const end = new Date(customEndDate);
             end.setHours(23, 59, 59, 999);
             return billDate >= start && billDate <= end;
@@ -1328,14 +1327,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
 
       </div>
 
-      {/* Metrics Cards Grid */}
-      <div id="reports-key-metrics-bento" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      {/* Metrics Cards Grid - Comprehensive Financial & Payment Breakdown */}
+      <div id="reports-key-metrics-bento" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
         
-        {/* Total Sales */}
+        {/* 1. Total Gross Sales */}
         <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Gross Revenue</span>
-            <div className="p-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg">
+            <div className="p-1.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
@@ -1343,74 +1342,162 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
             <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
               ₹{stats.totalGrossSales.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
             </h3>
-            <p className="text-[9px] text-[#10b981] font-bold flex items-center gap-0.5">
+            <p className="text-[9px] text-emerald-600 font-bold flex items-center gap-0.5">
               <TrendingUp className="w-3 h-3" />
-              <span>Full collected invoices</span>
+              <span>{stats.totalOrders} Total Billed Invoices</span>
             </p>
           </div>
         </div>
 
-        {/* GST collected */}
+        {/* 2. Cash Collected */}
         <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Collected GST (Tax)</span>
-            <div className="p-1 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-lg">
-              <Percent className="w-4 h-4 animate-spin-slow" />
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Cash Collected</span>
+            <div className="p-1.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 rounded-lg">
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white font-bold">
-              ₹{stats.totalTax.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
+              ₹{stats.paymentMethods.cash.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
             </h3>
-            <p className="text-[9px] text-slate-400 font-medium">Total sales liability</p>
+            <p className="text-[9px] text-emerald-600 font-bold font-mono">
+              {getPercentageString(stats.paymentMethods.cash, stats.totalGrossSales)} of Total Revenue
+            </p>
           </div>
         </div>
 
-        {/* Service fees gathered */}
+        {/* 3. Card Payments */}
         <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Service Overhead</span>
-            <div className="p-1 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Card Payments</span>
+            <div className="p-1.5 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-lg">
+              <CreditCard className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
+              ₹{stats.paymentMethods.card.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
+            </h3>
+            <p className="text-[9px] text-blue-500 font-bold font-mono">
+              {getPercentageString(stats.paymentMethods.card, stats.totalGrossSales)} of Total Revenue
+            </p>
+          </div>
+        </div>
+
+        {/* 4. UPI / Online Payments */}
+        <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">UPI / QR Sales</span>
+            <div className="p-1.5 bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 rounded-lg">
+              <Sparkles className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
+              ₹{stats.paymentMethods.upi.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
+            </h3>
+            <p className="text-[9px] text-purple-500 font-bold font-mono">
+              {getPercentageString(stats.paymentMethods.upi, stats.totalGrossSales)} of Total Revenue
+            </p>
+          </div>
+        </div>
+
+        {/* 5. Customer Dues Outstanding */}
+        <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Due Outstanding</span>
+            <div className="p-1.5 bg-rose-50 dark:bg-rose-955/20 text-rose-600 dark:text-rose-400 rounded-lg">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-rose-600 dark:text-rose-400">
+              ₹{duesStats.totalOutstanding.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
+            </h3>
+            <p className="text-[9px] text-rose-500 font-bold font-mono">
+              {duesStats.count} Unpaid Bills ({duesStats.uniqueDebtors} Debtors)
+            </p>
+          </div>
+        </div>
+
+        {/* 6. GST Tax Collected */}
+        <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Collected GST (Tax)</span>
+            <div className="p-1.5 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-lg">
+              <Percent className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
+              ₹{stats.totalTax.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
+            </h3>
+            <p className="text-[9px] text-slate-400 font-medium">SGST + CGST Total</p>
+          </div>
+        </div>
+
+        {/* 7. Discounts Allowed */}
+        <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Discounts Given</span>
+            <div className="p-1.5 bg-amber-50 dark:bg-amber-955/20 text-amber-600 dark:text-amber-400 rounded-lg">
+              <TrendingDown className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
+              ₹{stats.totalDiscounts.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
+            </h3>
+            <p className="text-[9px] text-amber-500 font-bold font-mono">Special offer concessions</p>
+          </div>
+        </div>
+
+        {/* 8. Service Charge */}
+        <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Service Charge</span>
+            <div className="p-1.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
               <Utensils className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white font-bold">
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
               ₹{stats.totalServiceCharge.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
             </h3>
-            <p className="text-[9px] text-slate-400 font-medium font-mono">Gratuity collections</p>
+            <p className="text-[9px] text-slate-400 font-medium font-mono">Staff service additions</p>
           </div>
         </div>
 
-        {/* Delivery Charge gathered */}
+        {/* 9. Delivery Charges */}
         <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Delivery Charges</span>
-            <div className="p-1 bg-amber-50 dark:bg-amber-955/20 text-amber-600 dark:text-amber-400 rounded-lg">
+            <div className="p-1.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
               <Bike className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white font-bold">
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
               ₹{stats.totalDeliveryCharge.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
             </h3>
-            <p className="text-[9px] text-amber-500 font-bold font-mono">Last-mile dispatch premiums</p>
+            <p className="text-[9px] text-indigo-500 font-bold font-mono">Delivery fee collections</p>
           </div>
         </div>
 
-        {/* Total tickets & AOV */}
-        <div className="col-span-2 md:col-span-4 lg:col-span-1 bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
+        {/* 10. AOV & Ticket Count */}
+        <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-4 rounded-2xl shadow-2xs space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">AOV / Orders</span>
-            <div className="p-1 bg-rose-50 dark:bg-rose-955/20 text-rose-600 dark:text-rose-400 rounded-lg">
+            <span className="text-[10px] text-gray-400 font-extrabold uppercase font-mono tracking-wider">Avg Order Value</span>
+            <div className="p-1.5 bg-rose-50 dark:bg-rose-955/20 text-rose-600 dark:text-rose-400 rounded-lg">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white font-bold">
-              ₹{stats.averageOrderValue.toFixed(0)} <span className="text-xs font-normal text-slate-400">/ {stats.totalOrders} tickets</span>
+            <h3 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-850 dark:text-white">
+              ₹{stats.averageOrderValue.toFixed(0)}
             </h3>
-            <p className="text-[9px] text-rose-500 font-semibold font-mono">Avg ticket sales density</p>
+            <p className="text-[9px] text-rose-500 font-semibold font-mono">Across {stats.totalOrders} total tickets</p>
           </div>
         </div>
 
@@ -1692,25 +1779,6 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ bills, menu, waiters =
                     <div 
                       className="bg-blue-500 h-full rounded-full transition-all duration-500"
                       style={{ width: getPercentageString(stats.paymentMethods.card, stats.totalGrossSales) }}
-                    ></div>
-                  </div>
-                </div>
-
-                {/* Customer Dues / Ledger Credit */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-xs font-bold font-sans">
-                    <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      <span>Customer Dues / Ledger Credit</span>
-                    </span>
-                    <span className="font-mono text-[11px]">
-                      ₹{stats.paymentMethods.due.toFixed(1)} ({getPercentageString(stats.paymentMethods.due, stats.totalGrossSales)})
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-amber-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: getPercentageString(stats.paymentMethods.due, stats.totalGrossSales) }}
                     ></div>
                   </div>
                 </div>

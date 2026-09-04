@@ -42,7 +42,8 @@ import {
   Maximize2,
   Sun,
   Moon,
-  ChefHat
+  ChefHat,
+  Printer
 } from 'lucide-react';
 import { ThemeSelector, ColorTheme, CustomThemeConfig } from './components/ThemeSelector';
 
@@ -232,11 +233,16 @@ export default function App() {
     return [];
   });
 
-  useEffect(() => {
-    localStorage.setItem('bitespeed_due_payments', JSON.stringify(duePayments));
-  }, [duePayments]);
-
   const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [printerNotConnectedAlert, setPrinterNotConnectedAlert] = useState(false);
+
+  useEffect(() => {
+    const handleNotConnected = () => {
+      setPrinterNotConnectedAlert(true);
+    };
+    window.addEventListener('printer-not-connected', handleNotConnected);
+    return () => window.removeEventListener('printer-not-connected', handleNotConnected);
+  }, []);
 
   // Guest Table Scan details
   const [guestTableId, setGuestTableId] = useState<string | null>(() => {
@@ -298,6 +304,58 @@ export default function App() {
     }
   }, [currentUser, guestTenantId, guestTableId]);
 
+  const syncVirtualTablesWithOrders = (baseTables: Table[], currentOrders: TableOrder[], existingTables: Table[] = []): Table[] => {
+    const tableMap = new Map<string, Table>();
+    
+    baseTables.forEach(t => tableMap.set(t.id, t));
+
+    existingTables.forEach(t => {
+      if (t.id.startsWith('takeaway-') || t.id.startsWith('delivery-')) {
+        tableMap.set(t.id, t);
+      }
+    });
+
+    currentOrders.forEach(ord => {
+      if (ord.status !== 'completed' && ord.status !== 'cancelled') {
+        const isTakeawayOrDelivery = ord.orderType === 'takeaway' || ord.orderType === 'delivery' || ord.tableId.startsWith('takeaway-') || ord.tableId.startsWith('delivery-');
+        if (isTakeawayOrDelivery) {
+          let tableStatus: Table['status'] = 'vacant';
+          if (ord.status === 'billed') {
+            tableStatus = 'billed';
+          } else {
+            const hasDraftItems = ord.items.some(it => it.quantity > it.sentToKitchenQty);
+            tableStatus = hasDraftItems ? 'ordering' : 'kot_pending';
+          }
+
+          const existingTable = tableMap.get(ord.tableId);
+          if (!existingTable) {
+            tableMap.set(ord.tableId, {
+              id: ord.tableId,
+              name: ord.tableName || (ord.orderType === 'delivery' ? 'Delivery Outbound' : `Takeaway #${ord.id.slice(-4)}`),
+              capacity: 1,
+              status: tableStatus,
+              activeOrderId: ord.id,
+              currentWaiter: ord.currentWaiter || 'Takeaway Counter'
+            });
+          } else {
+            tableMap.set(ord.tableId, {
+              ...existingTable,
+              status: tableStatus,
+              activeOrderId: ord.id
+            });
+          }
+        }
+      }
+    });
+
+    return Array.from(tableMap.values());
+  };
+
+  // Sync virtual takeaway tables whenever orders state updates
+  useEffect(() => {
+    setTables(prev => syncVirtualTablesWithOrders(prev, orders, prev));
+  }, [orders]);
+
   // Load data from DB if real user or guest table session active
   const [loadingDb, setLoadingDb] = useState(false);
   useEffect(() => {
@@ -318,8 +376,8 @@ export default function App() {
             api.getExpenses().catch(() => []),
           ]);
           setMenu(dbMenu);
-          setTables(dbTables);
           setOrders(dbOrders);
+          setTables(prev => syncVirtualTablesWithOrders(dbTables, dbOrders, prev));
           setKots(dbKots);
           setBills(dbBills);
           setBillSeries(dbBillSeries);
@@ -555,8 +613,8 @@ export default function App() {
         ]);
         
         if (dbMenu) setMenu(dbMenu);
-        if (dbTables) setTables(dbTables);
         if (dbOrders) setOrders(dbOrders);
+        if (dbTables) setTables(prev => syncVirtualTablesWithOrders(dbTables, dbOrders || orders, prev));
         if (dbKots) setKots(dbKots);
         if (dbBills) setBills(dbBills);
         if (dbBillSeries) setBillSeries(dbBillSeries);
@@ -830,36 +888,33 @@ export default function App() {
   const handleSaveOrder = (updatedOrder: TableOrder) => {
     let updatedTableObj: Table | null = null;
     // 1. Calculate and update parent Table Status dynamically
-    setTables(prevTables => {
-      const updated = prevTables.map(t => {
-        if (t.id === updatedOrder.tableId) {
-          let tableStatus: Table['status'] = 'vacant';
-          if (updatedOrder.status === 'billed') {
-            tableStatus = 'billed';
-          } else if (updatedOrder.status === 'cancelled' || updatedOrder.status === 'completed') {
-            tableStatus = 'vacant';
-          } else {
-            const hasDraftItems = updatedOrder.items.some(it => it.quantity > it.sentToKitchenQty);
-            tableStatus = hasDraftItems ? 'ordering' : 'kot_pending';
-          }
-          
-          updatedTableObj = {
-            ...t,
-            status: tableStatus,
-            activeOrderId: updatedOrder.status === 'completed' || updatedOrder.status === 'cancelled' ? null : updatedOrder.id,
-            currentWaiter: updatedOrder.currentWaiter || t.currentWaiter
-          };
-
-          if (((currentUser && !currentUser.isDemo) || (guestTableId && guestTenantId && guestTenantId !== 'demo')) && updatedTableObj) {
-            api.updateTable(updatedTableObj.id, updatedTableObj).catch(err => console.error("Error updating table:", err));
-          }
-
-          return updatedTableObj;
+    setTables(prevTables => prevTables.map(t => {
+      if (t.id === updatedOrder.tableId) {
+        let tableStatus: Table['status'] = 'vacant';
+        if (updatedOrder.status === 'billed') {
+          tableStatus = 'billed';
+        } else if (updatedOrder.status === 'cancelled' || updatedOrder.status === 'completed') {
+          tableStatus = 'vacant';
+        } else {
+          const hasDraftItems = updatedOrder.items.some(it => it.quantity > it.sentToKitchenQty);
+          tableStatus = hasDraftItems ? 'ordering' : 'kot_pending';
         }
-        return t;
-      });
-      return updated.filter(t => !((t.id.startsWith('takeaway') || t.id.startsWith('delivery')) && t.status === 'vacant'));
-    });
+        
+        updatedTableObj = {
+          ...t,
+          status: tableStatus,
+          activeOrderId: updatedOrder.status === 'completed' || updatedOrder.status === 'cancelled' ? null : updatedOrder.id,
+          currentWaiter: updatedOrder.currentWaiter || t.currentWaiter
+        };
+
+        if (((currentUser && !currentUser.isDemo) || (guestTableId && guestTenantId && guestTenantId !== 'demo')) && updatedTableObj) {
+          api.updateTable(updatedTableObj.id, updatedTableObj).catch(err => console.error("Error updating table:", err));
+        }
+
+        return updatedTableObj;
+      }
+      return t;
+    }));
 
     // 2. Insert or replace in Orders database
     setOrders(prevOrders => {
@@ -1697,6 +1752,45 @@ export default function App() {
         bill={settledReceipt} 
         onClose={() => setSettledReceipt(null)} 
       />
+
+      {printerNotConnectedAlert && (
+        <div id="printer-not-connected-global-modal" className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto">
+              <Printer className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-base font-black text-slate-800 dark:text-white">Printer Not Connected</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                The thermal printer could not be reached. Please connect or configure your printer in Settings.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playTick();
+                  setPrinterNotConnectedAlert(false);
+                  setCurrentTab('printer-settings');
+                }}
+                className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer border-none shadow-sm"
+              >
+                Go to Settings
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  soundEffects.playTick();
+                  setPrinterNotConnectedAlert(false);
+                }}
+                className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer border-none"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

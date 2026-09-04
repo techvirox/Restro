@@ -166,16 +166,16 @@ export const KotView: React.FC<KotViewProps> = ({
                   
                   <div className="flex items-center space-x-1.5">
                     <button
-                      id={`kot-print-${kot.id}`}
+                      id={`kot-print-direct-${kot.id}`}
                       onClick={() => {
                         soundEffects.playTick();
-                        const paperSize = (localStorage.getItem('bitespeed_print_paper_size') as '80mm' | '58mm') || '58mm';
+                        const paperSize = (localStorage.getItem('bitespeed_print_paper_size') as '80mm' | '58mm') || '80mm';
                         printThermalKot(kot, paperSize);
                       }}
-                      className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold font-mono px-2.5 py-1.5 rounded-lg flex items-center space-x-1 transition-all shadow-xs cursor-pointer"
-                      title="Direct Print KOT Slip"
+                      className="text-xs bg-slate-800 hover:bg-slate-700 text-white font-bold font-mono px-2.5 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer"
+                      title="Print KOT Slip using printer configured in Settings"
                     >
-                      <Printer className="w-3.5 h-3.5 text-white" />
+                      <Printer className="w-3.5 h-3.5 text-indigo-400" />
                       <span>Print KOT</span>
                     </button>
                     {kot.status === 'pending' && (

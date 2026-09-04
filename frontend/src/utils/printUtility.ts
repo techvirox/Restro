@@ -543,7 +543,7 @@ export const printThermalBillIframe = (
       <table>
         <tr><td>Subtotal:</td><td style="text-align: right;">₹${bill.subtotal.toFixed(2)}</td></tr>
         ${bill.discountAmount > 0 ? `<tr><td>Discount:</td><td style="text-align: right;">-₹${bill.discountAmount.toFixed(2)}</td></tr>` : ''}
-        <tr><td>Tax:</td><td style="text-align: right;">₹${bill.taxAmount.toFixed(2)}</td></tr>
+        <tr><td>GST:</td><td style="text-align: right;">₹${bill.taxAmount.toFixed(2)}</td></tr>
         <tr style="font-weight: bold; font-size: 14px; border-top: 1px solid #000;">
           <td>TOTAL:</td><td style="text-align: right;">₹${bill.grandTotal.toFixed(2)}</td>
         </tr>
@@ -578,23 +578,25 @@ export const printThermalBill = (
 
   const driver = localStorage.getItem('bitespeed_printer_driver') || 'system';
 
+  const notifyDisconnected = () => {
+    if (onNotConnected) {
+      onNotConnected();
+    } else {
+      const event = new CustomEvent('printer-not-connected', { detail: { bill, duplicateSlip, paperSize } });
+      window.dispatchEvent(event);
+    }
+  };
+
   if (driver === 'usb') {
     const dataBytes = generateEscPosBytes(bill, duplicateSlip, paperSize);
     printDirectUSB(dataBytes).catch(() => {
-      if (onNotConnected) onNotConnected();
-      else printThermalBillIframe(bill, duplicateSlip, paperSize);
+      notifyDisconnected();
     });
   } else if (driver === 'bluetooth') {
     const dataBytes = generateEscPosBytes(bill, duplicateSlip, paperSize);
     printDirectBluetooth(dataBytes, false)
       .catch(() => {
-        if (onNotConnected) {
-          onNotConnected();
-        } else {
-          // Trigger global custom event if no callback passed
-          const event = new CustomEvent('printer-not-connected', { detail: { bill, duplicateSlip, paperSize } });
-          window.dispatchEvent(event);
-        }
+        notifyDisconnected();
       });
   } else {
     printThermalBillIframe(bill, duplicateSlip, paperSize);
@@ -662,17 +664,31 @@ export const generateKotEscPosBytes = (
 
 export const printThermalKot = (
   kot: KOT,
-  paperSize: '80mm' | '58mm' = '80mm'
+  paperSize: '80mm' | '58mm' = '80mm',
+  onNotConnected?: () => void
 ) => {
   if (typeof window === 'undefined') return;
 
   const driver = localStorage.getItem('bitespeed_printer_driver') || 'system';
 
+  const notifyDisconnected = () => {
+    if (onNotConnected) {
+      onNotConnected();
+    } else {
+      const event = new CustomEvent('printer-not-connected', { detail: { kot, paperSize } });
+      window.dispatchEvent(event);
+    }
+  };
+
   if (driver === 'usb') {
     const dataBytes = generateKotEscPosBytes(kot, paperSize);
-    printDirectUSB(dataBytes).catch(() => {});
+    printDirectUSB(dataBytes).catch(() => {
+      notifyDisconnected();
+    });
   } else if (driver === 'bluetooth') {
     const dataBytes = generateKotEscPosBytes(kot, paperSize);
-    printDirectBluetooth(dataBytes, false).catch(() => {});
+    printDirectBluetooth(dataBytes, false).catch(() => {
+      notifyDisconnected();
+    });
   }
 };

@@ -304,42 +304,47 @@ export default function App() {
     }
   }, [currentUser, guestTenantId, guestTableId]);
 
-  const syncVirtualTablesWithOrders = (baseTables: Table[], currentOrders: TableOrder[], existingTables: Table[] = []): Table[] => {
+  const syncVirtualTablesWithOrders = (baseTables: Table[], currentOrders: TableOrder[]): Table[] => {
     const tableMap = new Map<string, Table>();
     
-    baseTables.forEach(t => tableMap.set(t.id, t));
-
-    existingTables.forEach(t => {
-      if (t.id.startsWith('takeaway-') || t.id.startsWith('delivery-')) {
-        tableMap.set(t.id, t);
+    // 1. Physical base tables (e.g. Table 1..8): Reset to vacant by default
+    baseTables.forEach(t => {
+      if (!t.id.startsWith('takeaway-') && !t.id.startsWith('delivery-')) {
+        tableMap.set(t.id, {
+          ...t,
+          status: 'vacant',
+          activeOrderId: null
+        });
       }
     });
 
+    // 2. Derive active table statuses and virtual takeaway/delivery cards strictly from active orders ONLY
     currentOrders.forEach(ord => {
       if (ord.status !== 'completed' && ord.status !== 'cancelled') {
-        const isTakeawayOrDelivery = ord.orderType === 'takeaway' || ord.orderType === 'delivery' || ord.tableId.startsWith('takeaway-') || ord.tableId.startsWith('delivery-');
-        if (isTakeawayOrDelivery) {
-          let tableStatus: Table['status'] = 'vacant';
-          if (ord.status === 'billed') {
-            tableStatus = 'billed';
-          } else {
-            const hasDraftItems = ord.items.some(it => it.quantity > it.sentToKitchenQty);
-            tableStatus = hasDraftItems ? 'ordering' : 'kot_pending';
-          }
+        let tableStatus: Table['status'] = 'vacant';
+        if (ord.status === 'billed') {
+          tableStatus = 'billed';
+        } else {
+          const hasDraftItems = ord.items && ord.items.some(it => it.quantity > it.sentToKitchenQty);
+          tableStatus = hasDraftItems ? 'ordering' : 'kot_pending';
+        }
 
-          const existingTable = tableMap.get(ord.tableId);
-          if (!existingTable) {
+        const isTakeawayOrDelivery = ord.orderType === 'takeaway' || ord.orderType === 'delivery' || ord.tableId.startsWith('takeaway-') || ord.tableId.startsWith('delivery-');
+
+        if (isTakeawayOrDelivery) {
+          tableMap.set(ord.tableId, {
+            id: ord.tableId,
+            name: ord.tableName || (ord.orderType === 'delivery' ? 'Delivery Outbound' : `Takeaway #${ord.id.slice(-4)}`),
+            capacity: 1,
+            status: tableStatus,
+            activeOrderId: ord.id,
+            currentWaiter: ord.currentWaiter || 'Takeaway Counter'
+          });
+        } else {
+          const existing = tableMap.get(ord.tableId);
+          if (existing) {
             tableMap.set(ord.tableId, {
-              id: ord.tableId,
-              name: ord.tableName || (ord.orderType === 'delivery' ? 'Delivery Outbound' : `Takeaway #${ord.id.slice(-4)}`),
-              capacity: 1,
-              status: tableStatus,
-              activeOrderId: ord.id,
-              currentWaiter: ord.currentWaiter || 'Takeaway Counter'
-            });
-          } else {
-            tableMap.set(ord.tableId, {
-              ...existingTable,
+              ...existing,
               status: tableStatus,
               activeOrderId: ord.id
             });
@@ -353,7 +358,7 @@ export default function App() {
 
   // Sync virtual takeaway tables whenever orders state updates
   useEffect(() => {
-    setTables(prev => syncVirtualTablesWithOrders(prev, orders, prev));
+    setTables(prev => syncVirtualTablesWithOrders(prev, orders));
   }, [orders]);
 
   // Load data from DB if real user or guest table session active
@@ -377,7 +382,7 @@ export default function App() {
           ]);
           setMenu(dbMenu);
           setOrders(dbOrders);
-          setTables(prev => syncVirtualTablesWithOrders(dbTables, dbOrders, prev));
+          setTables(syncVirtualTablesWithOrders(dbTables, dbOrders));
           setKots(dbKots);
           setBills(dbBills);
           setBillSeries(dbBillSeries);
@@ -614,7 +619,7 @@ export default function App() {
         
         if (dbMenu) setMenu(dbMenu);
         if (dbOrders) setOrders(dbOrders);
-        if (dbTables) setTables(prev => syncVirtualTablesWithOrders(dbTables, dbOrders || orders, prev));
+        if (dbTables) setTables(syncVirtualTablesWithOrders(dbTables, dbOrders || orders));
         if (dbKots) setKots(dbKots);
         if (dbBills) setBills(dbBills);
         if (dbBillSeries) setBillSeries(dbBillSeries);
